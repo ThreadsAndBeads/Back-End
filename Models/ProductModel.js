@@ -1,0 +1,39 @@
+const mongoose = require("mongoose");
+const productSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, "product must have a name"],
+  },
+  price: {
+    type: Number,
+    required: [true, "product must have a price"],
+  },
+  priceDiscount: {
+    type: Number,
+    validate: {
+      validator: function (val) {
+        return val < this.price;
+      },
+      message: " discount price should be below regular price",
+    },
+  },
+  description: {
+    type: String,
+    trim: true,
+  },
+  images: {
+    type: [String],
+    required: [true, "product must have a price"],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+});
+
+productSchema.virtual("discountPercentage").get(function () {
+  return (this.priceDiscount / this.price) * 100;
+});
+
+const Product = mongoose.model("Product", productSchema);
+module.exports = Product;
