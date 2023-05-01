@@ -1,11 +1,13 @@
 {
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "googleapis": "^118.0.0",
     "mongoose": "^7.1.0",
     "passport": "^0.6.0",
-    "passport-google-oauth2": "^0.2.0"
+    "passport-google-oauth2": "^0.2.0",
+    "validator": "^13.9.0"
   }
 }
