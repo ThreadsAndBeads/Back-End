@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 const productSchema = new mongoose.Schema({
+  user_id:{
+    type: Number,
+    required: [true, "product must have a user id "],
+  },
   name: {
     type: String,
     required: [true, "product must have a name"],
@@ -29,6 +33,7 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+
 });
 
 productSchema.virtual("discountPercentage").get(function () {
