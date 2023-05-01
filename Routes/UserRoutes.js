@@ -6,6 +6,9 @@ const router = Router();
 
 router.post("/signup", authController.signup_post);
 
+router.get('/login', authController.login_get);
+router.post('/login', authController.login_post);
+
 router.get("/facebook", authController.facebookLogin);
 router.get("/facebook/callback", authController.facebookCallback);
 
