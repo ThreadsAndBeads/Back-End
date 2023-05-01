@@ -3,7 +3,7 @@ const passport = require('passport');
 const session = require('express-session');
 const path = require('path');
 const app = express();
-require('./auth');
+require('../utils/googlesignup');
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'client')));
 app.use(express.json());
