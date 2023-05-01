@@ -1,8 +1,9 @@
 const express = require("express");
+const authRoutes = require('./Routes/UserRoutes');
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
-
+app.use(express.json());
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
 
@@ -18,3 +19,5 @@ mongoose
 app.listen(process.env.PORT, () => {
     console.log("http://localhost:" + process.env.PORT);
 });
+
+app.use(authRoutes);
