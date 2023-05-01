@@ -9,4 +9,9 @@ router.post("/signup", authController.signup_post);
 router.get("/facebook", authController.facebookLogin);
 router.get("/facebook/callback", authController.facebookCallback);
 
+router.get("/auth/google", authController.googleLogin);
+router.get("/auth/google/callback", authController.googleCallback);
+
+
+
 module.exports = router;

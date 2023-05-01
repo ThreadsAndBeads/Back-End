@@ -8,6 +8,7 @@ const session = require("express-session");
 dotenv.config({ path: "./config.env" });
 app.use(express.json());
 require("./utils/facebook");
+require ("./utils/googlesignup")
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
 

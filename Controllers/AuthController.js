@@ -57,3 +57,33 @@ exports.facebookCallback = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.googleLogin = (req, res, next) => {
+  passport.authenticate("google", { scope: ["email","profile"] })(req, res, next);
+};
+
+exports.googleCallback = async (req, res, next) => {
+  try {
+    passport.authenticate(
+      "google",
+      { failureRedirect: "/login" },
+      async (err, user) => {
+        if (err) {
+          return next(err);
+        }
+        if (!user) {
+          return res.redirect("/signup");
+        }
+        req.login(user, (err) => {
+          if (err) {
+            return next(err);
+          }
+          res.redirect("/");
+        });
+      }
+    )(req, res, next);
+  } catch (err) {
+    next(err);
+  }
+};
+
