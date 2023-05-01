@@ -22,4 +22,4 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use(authRoutes);
-app.use(productRoutes);
+app.use("/api/v1/products", productRoutes);
