@@ -1,4 +1,5 @@
 const User = require('../Models/UserModel');
+const bcrypt = require("bcrypt");
 //Handling Error Messages
 const handleErrors = (err) => {
     let errors = { email: '', password: '' };
@@ -26,3 +27,19 @@ module.exports.signup_post = async (req, res) => {
     }
     
 } 
+
+module.exports.login_get = async (req, res) => {res.send("user found");} //view
+
+module.exports.login_post = async (req, res) => {
+    const {email, password} = req.body;
+
+    let user = await User.findOne({'email': email});
+        if(!user){
+            res.json({message:"Login failed, User does not exist"})
+        }
+        if (!user.comparePassword(password)) {
+            return res.json({ message: "Wrong password" });
+        }
+        res.status(200).send("Logged in successfully");
+
+}
