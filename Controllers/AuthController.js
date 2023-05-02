@@ -1,6 +1,7 @@
 const User = require('../Models/UserModel');
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 var FacebookStrategy = require("passport-facebook").Strategy;
 //Handling Error Messages
@@ -19,11 +20,19 @@ const handleErrors = (err) => {
   }
   return errors;
 };
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+    return jwt.sign({ id }, 'threadsandbeads website', {
+        expiresIn: maxAge
+    });
+ }
 module.exports.signup_post = async (req, res) => {
     const { email, password, type, name } = req.body;
     try {
         const user = await User.create({ email, password, type, name });
-        res.status(201).json(user);
+        const token = createToken(user._id);
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(201).json({user,token});
     } catch (err) {
         const errors = handleErrors(err);
         res.status(400).json({errors});
