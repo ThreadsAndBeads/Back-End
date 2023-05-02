@@ -12,10 +12,10 @@ exports.createProduct = async (req, res, next) => {
         });
 
         res.status(201).json({
-          status: "success",
-          data: {
-            product: newProduct,
-          },
+            status: "success",
+            data: {
+                product: newProduct,
+            },
         });
     } catch (error) {
         res.status(400).json({
@@ -29,15 +29,38 @@ exports.getAllProducts = async (req, res) => {
     try {
         const products = await Product.find();
         res.status(201).json({
-          status: "success",
-          data: {
-            products: products,
-          },
+            status: "success",
+            data: {
+                products: products,
+            },
         });
     } catch (error) {
         res.status(400).json({
-          status: "fail",
-          message: error.message,
+            status: "fail",
+            message: error.message,
+        });
+    }
+};
+
+exports.getProduct = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if(! product){
+            return res.status(404).json({
+                status: "Not Found",
+                message: "Product not found for the given ID",
+            });
+        }
+        res.status(201).json({
+            status: "success",
+            data: {
+                product: product,
+            },
+        });
+    } catch (error) {
+        res.status(400).json({
+            status: "fail",
+            message: error.message,
         });
     }
 };
