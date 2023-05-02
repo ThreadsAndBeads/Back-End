@@ -43,18 +43,26 @@ module.exports.signup_post = async (req, res) => {
 module.exports.login_get = async (req, res) => {res.send("user found");} //view
 
 module.exports.login_post = async (req, res) => {
-    const {email, password} = req.body;
+  const { email, password } = req.body;
 
-    let user = await User.findOne({'email': email});
-        if(!user){
-            res.json({message:"Login failed, User does not exist"})
-        }
-        if (!user.comparePassword(password)) {
-            return res.json({ message: "Wrong password" });
-        }
-        res.status(200).send("Logged in successfully");
-
-}
+  try {
+    let user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ message: "Login failed, User does not exist" });
+    }
+    if (!user.comparePassword(password)) {
+      return res.json({ message: "Wrong password" });
+    }
+    const token = jwt.sign({ id: user._id }, "threadsandbeads website", {
+      expiresIn: maxAge,
+    });
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ message: "Logged in successfully", token });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 exports.facebookLogin = (req, res, next) => {
   passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
