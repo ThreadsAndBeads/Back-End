@@ -1,10 +1,12 @@
-const User = require('../Models/UserModel');
+const User = require("../Models/UserModel");
+const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const emailController = require('./EmailController');
-var FacebookStrategy = require("passport-facebook").Strategy;
+const emailController = require("./EmailController");
+const sendEmail = require("./../utils/email");
+const FacebookStrategy = require("passport-facebook").Strategy;
 //Handling Error Messages
 const handleErrors = (err) => {
   let errors = { email: "", password: "" };
@@ -23,40 +25,39 @@ const handleErrors = (err) => {
 };
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-    return jwt.sign({ id }, 'threadsandbeads website', {
-        expiresIn: maxAge
-    });
- }
+  return jwt.sign({ id }, "threadsandbeads website", {
+    expiresIn: maxAge,
+  });
+};
 module.exports.signup_post = async (req, res) => {
-    const { email, password, type, name } = req.body;
-    try {
-      const user = await User.create({
-        email,
-        password,
-        type,
-        name,
-        isEmailVerified: false,
-      });
-        const token = createToken(user._id);
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-        emailController.sendVerificationEmail(name, email);
-      res.status(201).json({
-        status: "success",
-        data: {
-          user,
-          token,
-          message: "verification email sent"
-        },
-      });
-    } catch (err) {
-        const errors = handleErrors(err);
-      res.status(400).json({
-        status: "fail",
-        errors
-        });
-    }
-    
-} 
+  const { email, password, type, name } = req.body;
+  try {
+    const user = await User.create({
+      email,
+      password,
+      type,
+      name,
+      isEmailVerified: false,
+    });
+    const token = createToken(user._id);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    emailController.sendVerificationEmail(name, email);
+    res.status(201).json({
+      status: "success",
+      data: {
+        user,
+        token,
+        message: "verification email sent",
+      },
+    });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({
+      status: "fail",
+      errors,
+    });
+  }
+};
 module.exports.verify_get = async (req, res) => {
   const verificationToken = req.query.token;
 
@@ -93,8 +94,9 @@ module.exports.verify_get = async (req, res) => {
   }
 };
 
-
-module.exports.login_get = async (req, res) => {res.send("user found");} //view
+module.exports.login_get = async (req, res) => {
+  res.send("user found");
+}; //view
 
 module.exports.login_post = async (req, res) => {
   const { email, password } = req.body;
@@ -148,7 +150,11 @@ exports.facebookCallback = async (req, res, next) => {
 };
 
 exports.googleLogin = (req, res, next) => {
-  passport.authenticate("google", { scope: ["email","profile"] })(req, res, next);
+  passport.authenticate("google", { scope: ["email", "profile"] })(
+    req,
+    res,
+    next
+  );
 };
 
 exports.googleCallback = async (req, res, next) => {
@@ -177,12 +183,113 @@ exports.googleCallback = async (req, res, next) => {
 };
 
 module.exports.logout_get = (req, res) => {
-  res.cookie('jwt', 'loggedout',{ 
-  expires: new Date(Date.now() + 10 * 1000),
-   httpOnly: true});
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
 
   res.status(200).json({
     status: "success",
   });
-}
+};
 
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
+
+const createSendToken = (user, statusCode, res) => {
+  const token = signToken(user._id);
+  const cookieOptions = {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+  };
+
+  res.cookie("jwt", token, cookieOptions);
+
+  // Remove password from output
+  user.password = undefined;
+
+  res.status(statusCode).json({
+    status: "success",
+    token,
+    data: {
+      user,
+    },
+  });
+};
+
+exports.forgotPassword = async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return next("There is no user with email address.", 404);
+    }
+
+    // 2) Generate the random reset token
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    // 3) Send it to user's email
+    const resetURL = `${req.protocol}://${req.get(
+      "host"
+    )}/resetPassword/${resetToken}`;
+
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Your password reset token (valid for 10 min)",
+        message,
+      });
+
+      res.status(200).json({
+        status: "success",
+        message: "Token sent to email!",
+      });
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      return next(
+        "There was an error sending the email. Try again later!",
+        500
+      );
+    }
+  } catch (err) {
+    next("There was an error sending the email. Try again later!", 500);
+  }
+};
+
+exports.resetPassword = async (req, res, next) => {
+  //Get user based on the token
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  // If token has not expired, and there is user, set the new password
+  if (!user) {
+    return next("Token is invalid or has expired", 400);
+  }
+  user.password = req.body.password;
+  // user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  // Update changedPasswordAt property for the user
+  // Log the user in, send JWT
+  createSendToken(user, 200, res);
+};

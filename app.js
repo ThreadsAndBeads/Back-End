@@ -1,5 +1,5 @@
 const express = require("express");
-const authRoutes = require("./Routes/UserRoutes");
+const userRoutes = require("./Routes/UserRoutes");
 const productRoutes = require("./Routes/ProductRoutes");
 const cartRoutes = require("./Routes/CartRoutes");
 const app = express();
@@ -35,10 +35,13 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(authRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/users", userRoutes);
 
+app.all("*", (req, res, next) => {
+  next(`Can't find ${req.originalUrl} on this server!`, 404);
+});
 app.listen(process.env.PORT, () => {
   console.log("http://localhost:" + process.env.PORT);
 });
