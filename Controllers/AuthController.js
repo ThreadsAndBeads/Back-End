@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const emailController = require('./EmailController');
 var FacebookStrategy = require("passport-facebook").Strategy;
 //Handling Error Messages
 const handleErrors = (err) => {
@@ -29,15 +30,22 @@ const createToken = (id) => {
 module.exports.signup_post = async (req, res) => {
     const { email, password, type, name } = req.body;
     try {
-        const user = await User.create({ email, password, type, name });
+      const user = await User.create({
+        email,
+        password,
+        type,
+        name,
+        isEmailVerified: false,
+      });
         const token = createToken(user._id);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-      // res.status(201).json({ user, token });
+        emailController.sendVerificationEmail(name, email);
       res.status(201).json({
         status: "success",
         data: {
           user,
-          token
+          token,
+          message: "verification email sent"
         },
       });
     } catch (err) {
@@ -49,6 +57,42 @@ module.exports.signup_post = async (req, res) => {
     }
     
 } 
+module.exports.verify_get = async (req, res) => {
+  const verificationToken = req.query.token;
+
+  try {
+    const user = await User.findOne({ verificationToken });
+
+    if (!user) {
+      return res.status(404).json({
+        status: "fail",
+        message: "User not found",
+      });
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Email already verified",
+      });
+    }
+
+    user.isEmailVerified = true;
+    user.verificationToken = undefined;
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Email verified",
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
+
 
 module.exports.login_get = async (req, res) => {res.send("user found");} //view
 

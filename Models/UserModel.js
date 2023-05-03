@@ -19,7 +19,13 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-    }
+    },
+    isEmailVerified: {
+        type: Boolean,
+    },
+    verificationToken: {
+        type: String,
+      },
 })
 
 //fire function before user is saved to database
