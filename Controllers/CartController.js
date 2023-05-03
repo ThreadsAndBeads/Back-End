@@ -1,3 +1,4 @@
+const { log } = require("console");
 const Cart = require("../Models/CartModel");
 const Product = require("../Models/ProductModel");
 const User = require("../Models/UserModel");
@@ -55,3 +56,30 @@ exports.AddToCart = async (req, res) => {
         });
     }
 };
+
+exports.clearCart = async (req, res) => {
+    const userId = req.params.id;
+    console.log(userId);
+
+    try {
+        // Find the cart for the user
+        const cart = await Cart.deleteOne({ userId });
+        
+        if (!cart) {
+        return res.status(400).json({
+            status: "fail",
+            message: "Cart not found",
+        });
+        }
+
+        res.status(200).json({
+        status: "success",
+        message: "Cart cleared successfully",
+        });
+    } catch (error) {
+        res.status(400).json({
+        status: "fail",
+        message: error.message,
+        });
+    }
+    };
