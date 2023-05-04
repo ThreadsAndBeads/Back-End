@@ -62,7 +62,6 @@ exports.clearCart = async (req, res) => {
     console.log(userId);
 
     try {
-        // Find the cart for the user
         const cart = await Cart.deleteOne({ userId });
         
         if (!cart) {
@@ -82,4 +81,4 @@ exports.clearCart = async (req, res) => {
         message: error.message,
         });
     }
-    };
+};
