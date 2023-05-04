@@ -21,5 +21,4 @@ router.get("/logout", authController.logout_get);
 
 router.route("/:id").get(UserController.getUserById);
 router.route("/sellers").get(UserController.getAllSellers);
-
 module.exports = router;
