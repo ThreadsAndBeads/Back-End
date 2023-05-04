@@ -212,7 +212,6 @@ exports.forgotPassword = async (req, res, next) => {
     // console.log(user);
     // 2) Generate the random reset token
     const resetToken = user.createPasswordResetToken();
-    // console.log(user);
     await user.save({ validateBeforeSave: false });
 
     // 3) Send it to user's email
@@ -234,10 +233,10 @@ exports.forgotPassword = async (req, res, next) => {
         message: "Token sent to email!",
       });
     } catch (err) {
+      console.log(err);
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
-
       return next(
         "There was an error sending the email. Try again later!",
         500
