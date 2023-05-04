@@ -6,11 +6,11 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(productController.getAllProducts)
-  .post(productController.createProduct);
+  .get(authController.protect, productController.getAllProducts)
+  .post(authController.protect, productController.createProduct);
 
 router
   .route("/:id")
-  .get(productController.getProduct)
-  .delete(productController.deleteProduct);
+  .get(authController.protect, productController.getProduct)
+  .delete(authController.protect, productController.deleteProduct);
 module.exports = router;
