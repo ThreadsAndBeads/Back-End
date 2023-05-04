@@ -21,6 +21,7 @@ router.get("/logout", authController.logout_get);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
+router.route("/:id").get(UserController.getUserById);
 router.route("/sellers").get(UserController.getAllSellers);
 
 module.exports = router;

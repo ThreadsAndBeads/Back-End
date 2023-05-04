@@ -5,6 +5,7 @@ exports.createProduct = async (req, res, next) => {
     const newProduct = await Product.create({
       user_id: req.body.user_id,
       name: req.body.name,
+      category: req.body.category,
       price: req.body.price,
       priceDiscount: req.body.priceDiscount,
       description: req.body.description,
@@ -27,7 +28,22 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    let filter = {};
+    if (req.query.filterBy) {
+      filter = {
+        ...filter,
+        [req.query.filterBy]: req.query.filterValue,
+      };
+    }
+    const products = await Product.find(filter);
+
+    if (products.length === 0) {
+      return res.status(400).json({
+        status: "fail",
+        message: "No products Found",
+      });
+    }
+
     res.status(201).json({
       status: "success",
       data: {

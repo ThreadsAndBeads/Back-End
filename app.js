@@ -35,9 +35,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
-app.use("/api/v1/users", userRoutes);
 
 app.all("*", (req, res, next) => {
   next(`Can't find ${req.originalUrl} on this server!`, 404);
