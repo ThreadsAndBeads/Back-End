@@ -11,7 +11,7 @@ router
 
 //router.route("/:id")
   //  .get(productController.getProduct)
-    //.delete(productController.deleteProduct);
+    //.delete(productController.deleteProduct); //nzbt da
 
 router.route("/discountedproducts")
 .get(productController.getHighestDiscountedProducts);
