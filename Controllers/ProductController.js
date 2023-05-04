@@ -103,3 +103,33 @@ exports.deleteProduct = async (req, res) => {
         });
     }
 };
+
+exports.getHighestDiscountedProducts = async (req, res) => {
+    try {
+      // Find all products with a discount
+      const discountedProducts = await Product.find({ priceDiscount: { $gt: 0 } });
+      
+  
+      // Sort the products by descending order of discount percentage
+      const sortedDiscountedProducts = discountedProducts.sort((a, b) => {
+        const discountA = a.discountPercentage;
+        const discountB = b.discountPercentage;
+        return discountB - discountA;
+      });
+  
+      // Return the top 10 products with the highest discount
+      const topDiscountedProducts = sortedDiscountedProducts.slice(0, 10);
+  
+      res.status(200).json({
+        status: "success",
+        data: {
+          products: topDiscountedProducts,
+        },
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: "fail",
+        message: error.message,
+      });
+    }
+  };
