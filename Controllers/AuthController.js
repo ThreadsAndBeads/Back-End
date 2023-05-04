@@ -105,7 +105,11 @@ module.exports.login_post = async (req, res) => {
       return res.json({ message: "Login failed, User does not exist" });
     }
     if (!user.comparePassword(password)) {
+      console.log(password);
       return res.json({ message: "Wrong password" });
+    }
+    if (!user.isEmailVerified) {
+      return res.json({ message: "Please verify your email to login" });
     }
     const token = jwt.sign({ id: user._id }, "threadsandbeads website", {
       expiresIn: maxAge,
