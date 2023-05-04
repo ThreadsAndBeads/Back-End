@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
 
 //fire function before user is saved to database
 userSchema.pre("save", async function (next) {
-  if (this.isNew) {
+  if (this.isNew || this.isModified("password")) {
     const salt = await bcrypt.genSalt();
     this.password = await bcrypt.hash(this.password, salt);
   }
@@ -50,14 +50,10 @@ userSchema.methods.comparePassword = function (password) {
 
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
-
   this.passwordResetToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
-
-  //   console.log({ resetToken }, this.passwordResetToken);
-
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
   return resetToken;
