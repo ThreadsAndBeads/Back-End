@@ -26,10 +26,16 @@ const createToken = (id) => {
     return jwt.sign({ id }, 'threadsandbeads website', {
         expiresIn: maxAge
     });
- }
+}
+// const hashPassword = async (password) => {
+//   const salt = await bcrypt.genSalt(saltRounds);
+//   const hashedPassword = await bcrypt.hash(password, salt);
+//   return hashedPassword;
+// };
 module.exports.signup_post = async (req, res) => {
     const { email, password, type, name } = req.body;
-    try {
+  try {
+    // const hashedPassword = await hashPassword(password);
       const user = await User.create({
         email,
         password,
@@ -62,7 +68,6 @@ module.exports.verify_get = async (req, res) => {
 
   try {
     const user = await User.findOne({ verificationToken });
-
     if (!user) {
       return res.status(404).json({
         status: "fail",
@@ -80,7 +85,6 @@ module.exports.verify_get = async (req, res) => {
     user.isEmailVerified = true;
     user.verificationToken = undefined;
     await user.save();
-
     res.status(200).json({
       status: "success",
       message: "Email verified",
@@ -105,7 +109,6 @@ module.exports.login_post = async (req, res) => {
       return res.json({ message: "Login failed, User does not exist" });
     }
     if (!user.comparePassword(password)) {
-      console.log(password);
       return res.json({ message: "Wrong password" });
     }
     if (!user.isEmailVerified) {
