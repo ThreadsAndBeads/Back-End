@@ -5,6 +5,7 @@ exports.createProduct = async (req, res, next) => {
         const newProduct = await Product.create({
             user_id: req.body.user_id,
             name: req.body.name,
+            category: req.body.category,
             price: req.body.price,
             priceDiscount: req.body.priceDiscount,
             description: req.body.description,
