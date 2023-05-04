@@ -1,6 +1,7 @@
 const User = require("../Models/UserModel");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+const { promisify } = require("util");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
@@ -193,51 +194,24 @@ module.exports.logout_get = (req, res) => {
   });
 };
 
-const signToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-};
-
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
-  const cookieOptions = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true,
-  };
-
-  res.cookie("jwt", token, cookieOptions);
-
-  // Remove password from output
-  user.password = undefined;
-
-  res.status(statusCode).json({
-    status: "success",
-    token,
-    data: {
-      user,
-    },
-  });
-};
-
 exports.forgotPassword = async (req, res, next) => {
   // 1) Get user based on POSTed email
   try {
     const user = await User.findOne({ email: req.body.email });
+
     if (!user) {
       return next("There is no user with email address.", 404);
     }
-
+    // console.log(user);
     // 2) Generate the random reset token
     const resetToken = user.createPasswordResetToken();
+    // console.log(user);
     await user.save({ validateBeforeSave: false });
 
     // 3) Send it to user's email
     const resetURL = `${req.protocol}://${req.get(
       "host"
-    )}/resetPassword/${resetToken}`;
+    )}/api/v1/users/resetPassword/${resetToken}`;
 
     const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
@@ -284,7 +258,6 @@ exports.resetPassword = async (req, res, next) => {
     return next("Token is invalid or has expired", 400);
   }
   user.password = req.body.password;
-  // user.passwordConfirm = req.body.passwordConfirm;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
   await user.save();
