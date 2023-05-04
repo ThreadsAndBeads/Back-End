@@ -18,6 +18,8 @@ router.get("/auth/google", authController.googleLogin);
 router.get("/auth/google/callback", authController.googleCallback);
 
 router.get("/logout", authController.logout_get);
+router.post("/forgotPassword", authController.forgotPassword);
+router.patch("/resetPassword/:token", authController.resetPassword);
 
 router.route("/:id").get(UserController.getUserById);
 router.route("/sellers").get(UserController.getAllSellers);
