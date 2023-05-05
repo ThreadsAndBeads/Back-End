@@ -83,3 +83,33 @@ exports.clearCart = async (req, res) => {
         });
     }
     };
+
+// exports.getTotalProductsInCart = async (req, res)=> {
+//     const cartId = req.params.cartId;
+//   try {
+//     const cart = await Cart.findById(cartId);
+//     let total = 0;
+//     cart.products.forEach((product) => {
+//       total += product.quantity;
+//     });
+//     return total;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+exports.getTotalProductsInCart = async (req, res) => {
+  const cartId = req.params.cartId;
+  try {
+    const cart = await Cart.findById(cartId);
+    let total = 0;
+    cart.products.forEach((product) => {
+      total += product.quantity;
+    });
+    res.status(200).json({ totalProducts: total });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error retrieving cart products." });
+  }
+};
+
