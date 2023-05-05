@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const emailController = require("./EmailController");
 const sendEmail = require("./../utils/email");
+const AppError = require("./../utils/appError");
 const FacebookStrategy = require("passport-facebook").Strategy;
 //Handling Error Messages
 const handleErrors = (err) => {
@@ -42,7 +43,6 @@ const createSendToken = (user, statusCode, res) => {
   res.cookie("jwt", token, cookieOptions);
   // Remove password from output
   user.password = undefined;
-
   res.status(statusCode).json({
     status: "success",
     token,
@@ -56,7 +56,7 @@ const createSendToken = (user, statusCode, res) => {
 //   const hashedPassword = await bcrypt.hash(password, salt);
 //   return hashedPassword;
 // };
-module.exports.signup_post = async (req, res) => {
+module.exports.signup_post = async (req, res, next) => {
   const { email, password, type, name } = req.body;
   try {
     // const hashedPassword = await hashPassword(password);
@@ -86,23 +86,25 @@ module.exports.signup_post = async (req, res) => {
     });
   }
 };
-module.exports.verify_get = async (req, res) => {
+module.exports.verify_get = async (req, res, next) => {
   const verificationToken = req.query.token;
 
   try {
     const user = await User.findOne({ verificationToken });
     if (!user) {
-      return res.status(404).json({
-        status: "fail",
-        message: "User not found",
-      });
+      return next(new AppError("User not found", 404));
+      // res.status(404).json({
+      //   status: "fail",
+      //   message: "User not found",
+      // });
     }
 
     if (user.isEmailVerified) {
-      return res.status(400).json({
-        status: "fail",
-        message: "Email already verified",
-      });
+      return next(new AppError("Email already verified", 404));
+      // res.status(400).json({
+      //   status: "fail",
+      //   message: "Email already verified",
+      // });
     }
 
     user.isEmailVerified = true;
@@ -120,23 +122,22 @@ module.exports.verify_get = async (req, res) => {
   }
 };
 
-module.exports.login_get = async (req, res) => {
+module.exports.login_get = async (req, res, next) => {
   res.send("user found");
 }; //view
 
-module.exports.login_post = async (req, res) => {
+module.exports.login_post = async (req, res, next) => {
   const { email, password } = req.body;
-
   try {
     let user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.json({ message: "Login failed, User does not exist" });
+      return next(new AppError("Login failed, User does not exist", 404));
     }
     if (!user.comparePassword(password)) {
-      return res.json({ message: "Wrong password" });
+      return next(new AppError("Wrong password", 401));
     }
     if (!user.isEmailVerified) {
-      return res.json({ message: "Please verify your email to login" });
+      return next(new AppError("Please verify your email to login", 401));
     }
     const token = jwt.sign({ id: user._id }, "threadsandbeads website", {
       expiresIn: maxAge,
@@ -160,14 +161,14 @@ exports.facebookCallback = async (req, res, next) => {
       { failureRedirect: "/login" },
       async (err, user) => {
         if (err) {
-          return next(err);
+          return next(new AppError(err.message));
         }
         if (!user) {
           return res.redirect("/signup");
         }
         req.login(user, (err) => {
           if (err) {
-            return next(err);
+            return next(new AppError(err.message));
           }
           res.redirect("/");
         });
@@ -193,14 +194,14 @@ exports.googleCallback = async (req, res, next) => {
       { failureRedirect: "/login" },
       async (err, user) => {
         if (err) {
-          return next(err);
+          return next(new AppError(err.message));
         }
         if (!user) {
           return res.redirect("/signup");
         }
         req.login(user, (err) => {
           if (err) {
-            return next(err);
+            return next(new AppError(err.message));
           }
           res.redirect("/");
         });
@@ -211,12 +212,11 @@ exports.googleCallback = async (req, res, next) => {
   }
 };
 
-module.exports.logout_get = (req, res) => {
+module.exports.logout_get = (req, res, next) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
-
   res.status(200).json({
     status: "success",
   });
@@ -233,7 +233,9 @@ exports.protect = async (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
     if (!token) {
-      return next("You are not logged in! Please log in to get access.", 401);
+      return next(
+        new AppError("You are not logged in! Please log in to get access.", 401)
+      );
     }
     // Verification token
     const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -242,15 +244,17 @@ exports.protect = async (req, res, next) => {
 
     if (!currentUser) {
       return next(
-        "The user belonging to this token does no longer exist.",
-        401
+        new AppError(
+          "The user belonging to this token does no longer exist.",
+          401
+        )
       );
     }
     // GRANT ACCESS TO PROTECTED ROUTE
     req.user = currentUser;
     next();
   } catch (err) {
-    next(err);
+    return next(new AppError(err.message));
   }
 };
 exports.forgotPassword = async (req, res, next) => {
@@ -259,7 +263,7 @@ exports.forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
-      return next("There is no user with email address.", 404);
+      return next(new AppError("There is no user with email address.", 404));
     }
     // console.log(user);
     // 2) Generate the random reset token
@@ -285,17 +289,24 @@ exports.forgotPassword = async (req, res, next) => {
         message: "Token sent to email!",
       });
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
       await user.save({ validateBeforeSave: false });
       return next(
-        "There was an error sending the email. Try again later!",
-        500
+        new AppError(
+          "There was an error sending the email. Try again later!",
+          500
+        )
       );
     }
   } catch (err) {
-    next("There was an error sending the email. Try again later!", 500);
+    return next(
+      new AppError(
+        "There was an error sending the email. Try again later!",
+        500
+      )
+    );
   }
 };
 
@@ -313,7 +324,8 @@ exports.resetPassword = async (req, res, next) => {
 
   // If token has not expired, and there is user, set the new password
   if (!user) {
-    return next("Token is invalid or has expired", 400);
+    return next(new AppError("Token is invalid or has expired", 401));
+    // return next("Token is invalid or has expired", 400);
   }
   user.password = req.body.password;
   user.passwordResetToken = undefined;

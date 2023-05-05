@@ -1,4 +1,5 @@
 const Product = require("../Models/ProductModel");
+const AppError = require("./../utils/appError");
 
 exports.createProduct = async (req, res, next) => {
   try {
@@ -19,14 +20,11 @@ exports.createProduct = async (req, res, next) => {
       },
     });
   } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
+    return next(new AppError(error.message));
   }
 };
 
-exports.getAllProducts = async (req, res) => {
+exports.getAllProducts = async (req, res, next) => {
   try {
     let filter = {};
     if (req.query.filterBy) {
@@ -36,14 +34,6 @@ exports.getAllProducts = async (req, res) => {
       };
     }
     const products = await Product.find(filter);
-
-    if (products.length === 0) {
-      return res.status(400).json({
-        status: "fail",
-        message: "No products Found",
-      });
-    }
-
     res.status(201).json({
       status: "success",
       data: {
@@ -51,21 +41,15 @@ exports.getAllProducts = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
+    return next(new AppError(error.message));
   }
 };
 
-exports.getProduct = async (req, res) => {
+exports.getProduct = async (req, res, next) => {
   try {
     const product = await Product.findById(req.params.id);
     if (!product) {
-      return res.status(404).json({
-        status: "Not Found",
-        message: "Product not found for the given ID",
-      });
+      return next(new AppError("Product not found for the given ID", 404));
     }
     res.status(201).json({
       status: "success",
@@ -74,79 +58,76 @@ exports.getProduct = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
+    return next(new AppError(error.message, 404));
   }
 };
 
-exports.deleteProduct = async (req, res) => {
+exports.deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
 
     if (!product) {
-      return res.status(404).json({
-        status: "fail",
-        message: "Product not found",
-      });
+      return next(new AppError("Product not found", 404));
     }
-
     res.status(200).json({
       status: "success",
       message: "product is deleted successfully",
     });
   } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
+    return next(new AppError(error.message));
   }
 };
 
-exports.getHighestDiscountedProducts = async (req, res) => {
-    try {
-      // Find all products with a discount
-      const discountedProducts = await Product.find({ priceDiscount: { $gt: 0 } });
-      
-  
-      // Sort the products by descending order of discount percentage
-      const sortedDiscountedProducts = discountedProducts.sort((a, b) => {
-        const discountA = a.discountPercentage;
-        const discountB = b.discountPercentage;
-        return discountB - discountA;
-      });
-  
-      // Return the top 10 products with the highest discount
-      const topDiscountedProducts = sortedDiscountedProducts.slice(0, 10);
-  
+exports.getHighestDiscountedProducts = async (req, res, next) => {
+  try {
+    // Find all products with a discount
+    const discountedProducts = await Product.find({
+      priceDiscount: { $gt: 0 },
+    });
+
+    // Sort the products by descending order of discount percentage
+    const sortedDiscountedProducts = discountedProducts.sort((a, b) => {
+      const discountA = a.discountPercentage;
+      const discountB = b.discountPercentage;
+      return discountB - discountA;
+    });
+
+    // Return the top 10 products with the highest discount
+    const topDiscountedProducts = sortedDiscountedProducts.slice(0, 10);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        products: topDiscountedProducts,
+      },
+    });
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+};
+
+exports.updateProduct = async (req, res, next) => {
+  try {
+    const productId = req.params.id;
+    const updates = req.body;
+    const options = { new: true };
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      updates,
+      options
+    );
+    console.log(updatedProduct);
+    if (updatedProduct) {
       res.status(200).json({
         status: "success",
         data: {
-          products: topDiscountedProducts,
+          product: updatedProduct,
         },
       });
-    } catch (error) {
-      res.status(400).json({
-        status: "fail",
-        message: error.message,
-      });
+    } else {
+      return next(new AppError("can not find product", 404));
     }
-  };
-
-  exports.updateProduct = async (req, res) => {
-    try {
-      const productId = req.params.id;
-      const updates = req.body;
-      const options = { new: true };
-      const updatedProduct = await Product.findByIdAndUpdate(
-        productId,
-        updates,
-        options
-      );
-      res.json(updatedProduct);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Server error" });
-    }
-  };  
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};

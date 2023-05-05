@@ -2,16 +2,12 @@
 const User = require("../Models/UserModel");
 const Product = require("../Models/ProductModel");
 
-exports.getUserById = async (req, res) => {
+exports.getUserById = async (req, res, next) => {
   try {
     userId = req.params.id;
     const user = await User.findById(userId);
-
     if (!user) {
-      return res.status(400).json({
-        status: "fail",
-        message: "User not found",
-      });
+      return next(new AppError("User not found", 404));
     }
 
     res.status(200).json({
@@ -21,15 +17,12 @@ exports.getUserById = async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(400).json({
-      status: "fail",
-      message: err.message,
-    });
+    return next(new AppError(err.message, 404));
   }
 };
 
 //get all sellers
-exports.getAllSellers = async (req, res) => {
+exports.getAllSellers = async (req, res, next) => {
   try {
     const sellers = await User.find({ type: "seller" });
     res.status(200).json({
@@ -39,11 +32,6 @@ exports.getAllSellers = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(400).json({
-      status: "fail",
-      message: error.message,
-    });
+    return next(new AppError(err.message, 404));
   }
 };
-
-
