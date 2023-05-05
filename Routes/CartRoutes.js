@@ -7,6 +7,7 @@ router.route("/").post(authController.protect, cartController.AddToCart);
 router
   .route("/:id/clear")
   .post(authController.protect, cartController.clearCart);
-router.route("/count").post(cartController.getTotalProductsInCart);
+
+router.route("/:id/count").get(cartController.getTotalProductsInCart);
 
 module.exports = router;
