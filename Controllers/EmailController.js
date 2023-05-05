@@ -2,15 +2,19 @@ const nodemailer = require("nodemailer");
 const User = require("../Models/UserModel");
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
-const GMAIL = process.env.GMAIL;
-const APP_PASSWORD = process.env.APP_PASSWORD;
+
 
 let transporter = nodemailer.createTransport({
-  service: "gmail",
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
+    secureConnection: false,
   auth: {
-    user: GMAIL,
-    pass: APP_PASSWORD,
-  },
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
+    },
+    tls: {
+        ciphers: "SSLv3",
+      },
 });
 
 const sendVerificationEmail = async (name, email, userId) => {
@@ -19,7 +23,7 @@ const sendVerificationEmail = async (name, email, userId) => {
     from: "marim.khaled99@gmail.com",
     to: email,
     subject: "Threads and Beads Email Verification",
-    html: `<p>Hi ${name},</p><p>Please click the following link to verify your email:</p><a href="https://example.com/verify?token=${verificationToken}">https://example.com/verify?token=${verificationToken}</a>`,
+    html: `<p>Hi ${name},</p><p>Please click the following link to verify your email:</p><a href="http://localhost:7000/api/v1/users/verify?token=${verificationToken}">http://localhost:7000/api/v1/users/verify?token=${verificationToken}</a>`,
   };
   const user = await User.findOneAndUpdate(
     { email: email },
