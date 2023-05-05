@@ -2,6 +2,9 @@ const express = require("express");
 const userRoutes = require("./Routes/UserRoutes");
 const productRoutes = require("./Routes/ProductRoutes");
 const cartRoutes = require("./Routes/CartRoutes");
+const globalErrorHandler = require("./Controllers/ErrorController");
+const AppError = require("./utils/appError");
+
 const app = express();
 const passport = require("passport");
 const dotenv = require("dotenv");
@@ -40,8 +43,10 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 
 app.all("*", (req, res, next) => {
-  next(`Can't find ${req.originalUrl} on this server!`, 404);
+  next(new AppError(`can't find ${req.originalUrl}`, 404 ));
 });
+app.use(globalErrorHandler);
+
 app.listen(process.env.PORT, () => {
   console.log("http://localhost:" + process.env.PORT);
 });
