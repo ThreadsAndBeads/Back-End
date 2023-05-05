@@ -10,15 +10,17 @@ router
   .post(authController.protect, productController.createProduct);
 
 //router.route("/:id")
-  //  .get(productController.getProduct)
-    //.delete(productController.deleteProduct); //nzbt da
+//  .get(productController.getProduct)
+//.delete(productController.deleteProduct); //nzbt da
 
-router.route("/discountedproducts")
-.get(productController.getHighestDiscountedProducts);
+router
+  .route("/discountedproducts")
+  .get(productController.getHighestDiscountedProducts);
 
 module.exports = router;
 router
   .route("/:id")
   .get(authController.protect, productController.getProduct)
-  .delete(authController.protect, productController.deleteProduct);
+  .delete(authController.protect, productController.deleteProduct)
+  .patch(authController.protect, productController.updateProduct);
 module.exports = router;

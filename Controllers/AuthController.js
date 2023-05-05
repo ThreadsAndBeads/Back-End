@@ -128,7 +128,7 @@ module.exports.login_post = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email }).select("+password");
     if (!user) {
       return res.json({ message: "Login failed, User does not exist" });
     }

@@ -133,3 +133,20 @@ exports.getHighestDiscountedProducts = async (req, res) => {
       });
     }
   };
+
+  exports.updateProduct = async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const updates = req.body;
+      const options = { new: true };
+      const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        updates,
+        options
+      );
+      res.json(updatedProduct);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  };  
