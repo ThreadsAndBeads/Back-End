@@ -83,20 +83,6 @@ exports.clearCart = async (req, res) => {
     }
     };
 
-// exports.getTotalProductsInCart = async (req, res)=> {
-//     const cartId = req.params.cartId;
-//   try {
-//     const cart = await Cart.findById(cartId);
-//     let total = 0;
-//     cart.products.forEach((product) => {
-//       total += product.quantity;
-//     });
-//     return total;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }
-
 exports.getTotalProductsInCart = async (req, res) => {
   const userId = req.params.id;
   try {
