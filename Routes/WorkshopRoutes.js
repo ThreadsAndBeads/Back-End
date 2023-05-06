@@ -4,9 +4,20 @@ const workshopController = require("./../Controllers/WorkshopController");
 
 const router = express.Router();
 
-router.route("/").post(
-  // authController.restrictTo("seller"),
-  workshopController.createWorkshop
-);
+router
+  .route("/")
+  .post(
+    authController.protect,
+    authController.restrictTo("seller"),
+    workshopController.createWorkshop
+  );
+
+router
+  .route("/:id")
+  .patch(
+    authController.protect,
+    authController.restrictTo("seller"),
+    workshopController.updateWorkshop
+  );
 
 module.exports = router;

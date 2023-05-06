@@ -31,3 +31,28 @@ exports.createWorkshop = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
+
+exports.updateWorkshop = async (req, res, next) => {
+  try {
+    const workshopId = req.params.id;
+    const updates = req.body;
+    const options = { new: true };
+    const updatedWorkshop = await Workshop.findByIdAndUpdate(
+      workshopId,
+      updates,
+      options
+    );
+    if (updatedWorkshop) {
+      res.status(200).json({
+        status: "success",
+        data: {
+          workshop: updatedWorkshop,
+        },
+      });
+    } else {
+      return next(new AppError("can not find Workshop", 404));
+    }
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};
