@@ -58,6 +58,7 @@ const createSendToken = (user, statusCode, res) => {
 // };
 module.exports.signup_post = async (req, res) => {
   const { email, password, type, name } = req.body;
+ 
   try {
     // const hashedPassword = await hashPassword(password);
     const user = await User.create({

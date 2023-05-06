@@ -5,8 +5,11 @@ const cartRoutes = require("./Routes/CartRoutes");
 const app = express();
 const passport = require("passport");
 const dotenv = require("dotenv");
+const cors = require('cors');
 const session = require("express-session");
 dotenv.config({ path: "./config.env" });
+
+app.use(cors());
 app.use(express.json());
 require("./utils/facebook");
 require("./utils/googlesignup");
