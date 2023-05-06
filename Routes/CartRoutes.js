@@ -10,4 +10,6 @@ router
 
 router.route("/:id/count").get(cartController.getTotalProductsInCart);
 
+router.route("/showcart").get(cartController.showCart);
+
 module.exports = router;
