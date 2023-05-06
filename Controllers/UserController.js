@@ -1,6 +1,6 @@
 //user controller
 const User = require("../Models/UserModel");
-const Product = require("../Models/ProductModel");
+const AppError = require("./../utils/appError");
 
 exports.getUserById = async (req, res, next) => {
   try {
