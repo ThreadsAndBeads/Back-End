@@ -2,13 +2,14 @@ const express = require("express");
 const userRoutes = require("./Routes/UserRoutes");
 const productRoutes = require("./Routes/ProductRoutes");
 const cartRoutes = require("./Routes/CartRoutes");
+const workshopRoutes = require("./Routes/WorkshopRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
 const AppError = require("./utils/appError");
 
 const app = express();
 const passport = require("passport");
 const dotenv = require("dotenv");
-const cors = require('cors');
+const cors = require("cors");
 const session = require("express-session");
 dotenv.config({ path: "./config.env" });
 
@@ -44,9 +45,10 @@ app.use(passport.session());
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
+app.use("/api/v1/workshops", workshopRoutes);
 
 app.all("*", (req, res, next) => {
-  next(new AppError(`can't find ${req.originalUrl}`, 404 ));
+  next(new AppError(`can't find ${req.originalUrl}`, 404));
 });
 app.use(globalErrorHandler);
 
