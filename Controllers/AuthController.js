@@ -9,6 +9,7 @@ const emailController = require("./EmailController");
 const sendEmail = require("./../utils/email");
 const AppError = require("./../utils/appError");
 const FacebookStrategy = require("passport-facebook").Strategy;
+
 //Handling Error Messages
 const handleErrors = (err) => {
   let errors = { email: "", password: "" };
@@ -25,6 +26,7 @@ const handleErrors = (err) => {
   }
   return errors;
 };
+
 const maxAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -56,9 +58,10 @@ const createSendToken = (user, statusCode, res) => {
 //   const hashedPassword = await bcrypt.hash(password, salt);
 //   return hashedPassword;
 // };
+
 module.exports.signup_post = async (req, res, next) => {
   const { email, password, type, name } = req.body;
- 
+
   try {
     // const hashedPassword = await hashPassword(password);
     const user = await User.create({
@@ -87,6 +90,7 @@ module.exports.signup_post = async (req, res, next) => {
     });
   }
 };
+
 module.exports.verify_get = async (req, res, next) => {
   const verificationToken = req.query.token;
 
@@ -94,18 +98,10 @@ module.exports.verify_get = async (req, res, next) => {
     const user = await User.findOne({ verificationToken });
     if (!user) {
       return next(new AppError("User not found", 404));
-      // res.status(404).json({
-      //   status: "fail",
-      //   message: "User not found",
-      // });
     }
 
     if (user.isEmailVerified) {
       return next(new AppError("Email already verified", 404));
-      // res.status(400).json({
-      //   status: "fail",
-      //   message: "Email already verified",
-      // });
     }
 
     user.isEmailVerified = true;
@@ -258,6 +254,7 @@ exports.protect = async (req, res, next) => {
     return next(new AppError(err.message));
   }
 };
+
 exports.forgotPassword = async (req, res, next) => {
   // 1) Get user based on POSTed email
   try {
@@ -336,4 +333,16 @@ exports.resetPassword = async (req, res, next) => {
   // Update changedPasswordAt property for the user
   // Log the user in, send JWT
   createSendToken(user, 200, res);
+};
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };
 };
