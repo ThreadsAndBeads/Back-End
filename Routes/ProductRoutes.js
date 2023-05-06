@@ -15,7 +15,7 @@ router
 
 router
   .route("/discountedproducts")
-  .get(productController.getHighestDiscountedProducts);
+  .get(authController.protect, productController.getHighestDiscountedProducts);
 
 module.exports = router;
 router
