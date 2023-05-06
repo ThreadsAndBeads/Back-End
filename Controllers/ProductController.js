@@ -1,10 +1,45 @@
 const Product = require("../Models/ProductModel");
 const AppError = require("./../utils/appError");
+const multer = require("multer");
+const sharp = require("sharp");
+
+const multerStorage = multer.memoryStorage();
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("not an image please upload only images", 400), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.resizeProductImages = async (req, res, next) => {
+  if (!req.files.images) return next();
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `product-${req.body.user_id}-${i + 1}.jpeg`;
+      await sharp(req.files.images[0].buffer)
+        .resize(500, 500, {
+          fit: "contain",
+        })
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/products/${filename}`);
+      req.body.images.push(filename);
+    })
+  );
+  next();
+};
+exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 
 exports.createProduct = async (req, res, next) => {
   try {
     const newProduct = await Product.create({
-      user_id: req.body.user_id,
+      user_id: req.params.id,
       name: req.body.name,
       category: req.body.category,
       price: req.body.price,
