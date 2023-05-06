@@ -79,3 +79,21 @@ exports.getTotalProductsInCart = async (req, res) => {
         message: "Error retrieving cart products." });
   }
 };
+
+exports.showCart = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const cart = await Cart.findOne({ userId }).populate("products.productId");
+    res.status(200).json({
+      status: "success",
+      data: {
+        cart: cart,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ 
+        status: 'failed',
+        message: "Error retrieving cart products." });
+  }
+};
