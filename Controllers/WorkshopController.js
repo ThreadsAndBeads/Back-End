@@ -56,3 +56,20 @@ exports.updateWorkshop = async (req, res, next) => {
     return next(new AppError(err.message));
   }
 };
+
+exports.deleteWorkshop = async (req, res, next) => {
+  try {
+    const workshopId = req.params.id;
+    const deletedWorkshop = await Workshop.findByIdAndDelete(workshopId);
+    if (deletedWorkshop) {
+      res.status(200).json({
+        status: "success",
+        data: null,
+      });
+    } else {
+      return next(new AppError("Can not find workshop", 404));
+    }
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};
