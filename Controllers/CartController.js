@@ -48,8 +48,8 @@ exports.AddToCart = async (req, res, next) => {
 };
 
 exports.clearCart = async (req, res) => {
-  const userId = req.params.id;
   try {
+    const userId = req.params.id;
     const cart = await Cart.deleteOne({ userId });
 
     if (!cart) {
@@ -63,6 +63,34 @@ exports.clearCart = async (req, res) => {
     return next(new AppError(error.message));
   }
 };
+
+exports.DeleteProduct = async (req, res, next) => {
+  try { 
+    const productId = req.params.id;
+    const userId = req.user._id;
+    const cart = await Cart.findOne({ userId });
+    if(!cart){
+      return next(new AppError("Cart not found", 404));
+    }
+
+    let productIndex = cart.products.findIndex((p) => p.productId == productId);
+
+    if (productIndex === -1) {
+      return next(new AppError("Product not found in cart", 404));
+    }
+
+    cart.products.splice(productIndex, 1);
+    await cart.save();
+
+    res.status(200).json({
+      status: "success",
+      data: cart,
+    });
+
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+}
 
 exports.getTotalProductsInCart = async (req, res) => {
   const userId = req.params.id;
