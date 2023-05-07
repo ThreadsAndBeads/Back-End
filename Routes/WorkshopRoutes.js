@@ -10,20 +10,20 @@ router
     authController.protect,
     authController.restrictTo("seller"),
     workshopController.createWorkshop
-  );
-
-router
-  .route("/:id")
+  )
+  .get(authController.protect,workshopController.showAllWorkshops);
+  
+router.route("/:id")
+  .get(authController.protect, workshopController.getWorkshopById)
+  .delete(
+    authController.protect,
+    authController.restrictTo("seller"),
+    workshopController.deleteWorkshop
+  )
   .patch(
     authController.protect,
     authController.restrictTo("seller"),
     workshopController.updateWorkshop
-    
   );
-
-  router.route("/:id").get(workshopController.getWorkshopById);
-
-  router.delete("/:id/delete", workshopController.deleteWorkshop);
-  router.get("/allworkshops",workshopController.showAllWorkshops);
 
 module.exports = router;
