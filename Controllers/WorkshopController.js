@@ -57,7 +57,7 @@ exports.updateWorkshop = async (req, res, next) => {
   }
 };
 
-
+<<<<<<<<< Temporary merge branch 1
 exports.deleteWorkshop = async (req, res, next) => {
   try {
     const workshopId = req.params.id;
@@ -82,13 +82,7 @@ exports.showAllWorkshops = async (req, res, next) => {
       status: "success",
       data: {
         workshops: workshops,
-      },
-    });
-  } catch (err) {
-    return next(new AppError(err.message));
-  }
-};
-
+=========
 exports.getWorkshopById = async (req, res, next) => {
   try {
     const workshopId = req.params.id;
@@ -100,6 +94,7 @@ exports.getWorkshopById = async (req, res, next) => {
       status: "success",
       data: {
         workshop,
+>>>>>>>>> Temporary merge branch 2
       },
     });
   } catch (error) {
