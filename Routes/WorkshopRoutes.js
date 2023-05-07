@@ -20,4 +20,9 @@ router
     workshopController.updateWorkshop
   );
 
+  router.delete("/:id/delete", workshopController.deleteWorkshop);
+  router.get("/allworkshops",workshopController.showAllWorkshops);
+
+
+
 module.exports = router;
