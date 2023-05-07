@@ -23,4 +23,7 @@ router
 
   router.route("/:id").get(workshopController.getWorkshopById);
 
+  router.delete("/:id/delete", workshopController.deleteWorkshop);
+  router.get("/allworkshops",workshopController.showAllWorkshops);
+
 module.exports = router;
