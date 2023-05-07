@@ -18,6 +18,9 @@ router
     authController.protect,
     authController.restrictTo("seller"),
     workshopController.updateWorkshop
+    
   );
+
+  router.route("/:id").get(workshopController.getWorkshopById);
 
 module.exports = router;
