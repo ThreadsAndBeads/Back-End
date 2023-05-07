@@ -73,3 +73,17 @@ exports.deleteWorkshop = async (req, res, next) => {
     return next(new AppError(err.message));
   }
 };
+
+exports.showAllWorkshops = async (req, res, next) => {
+  try {
+    const workshops = await Workshop.find();
+    res.status(200).json({
+      status: "success",
+      data: {
+        workshops: workshops,
+      },
+    });
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};

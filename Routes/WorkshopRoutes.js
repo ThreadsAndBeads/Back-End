@@ -21,6 +21,7 @@ router
   );
 
   router.delete("/:id/delete", workshopController.deleteWorkshop);
+  router.get("/allworkshops",workshopController.showAllWorkshops);
 
 
 
