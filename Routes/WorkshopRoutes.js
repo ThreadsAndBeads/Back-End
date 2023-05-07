@@ -21,6 +21,4 @@ router
     
   );
 
-  router.route("/:id").get(workshopController.getWorkshopById);
-
 module.exports = router;
