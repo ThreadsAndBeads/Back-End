@@ -26,4 +26,11 @@ router.route("/:id")
     workshopController.updateWorkshop
   );
 
+  //router.route("/:id").get(workshopController.getWorkshopById);
+  router.route("/:id/delete").delete( workshopController.deleteWorkshop);
+  router.route("/allworkshops").get(workshopController.showAllWorkshops);
+
+
+
+
 module.exports = router;
