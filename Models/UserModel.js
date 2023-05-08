@@ -17,12 +17,12 @@ const userSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    required: true,
+    required: [true,"Account type is required"],
     enum: ["customer", "seller"],
   },
   name: {
     type: String,
-    required: true,
+    required: [true,"The name is required"],
   },
   isEmailVerified: {
     type: Boolean,
