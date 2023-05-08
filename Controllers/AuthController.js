@@ -53,17 +53,11 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
-// const hashPassword = async (password) => {
-//   const salt = await bcrypt.genSalt(saltRounds);
-//   const hashedPassword = await bcrypt.hash(password, salt);
-//   return hashedPassword;
-// };
-
 module.exports.signup_post = async (req, res, next) => {
   const { email, password, type, name } = req.body;
 
   try {
-    // const hashedPassword = await hashPassword(password);
+
     const user = await User.create({
       email,
       password,
@@ -128,7 +122,7 @@ module.exports.login_post = async (req, res, next) => {
   try {
     let user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return next(new AppError("Login failed, User does not exist", 404));
+      return next(new AppError("This email doesn't exist", 404));
     }
     if (!user.comparePassword(password)) {
       return next(new AppError("Wrong password", 401));
@@ -344,7 +338,6 @@ exports.restrictTo = (...roles) => {
         new AppError("You do not have permission to perform this action", 403)
       );
     }
-
     next();
   };
 };
