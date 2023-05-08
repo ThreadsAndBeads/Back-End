@@ -47,7 +47,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/workshops", workshopRoutes);
-app.use("/api/v1/order", workshopRoutes);
+app.use("/api/v1/order", orderRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl}`, 404));
