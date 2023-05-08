@@ -273,13 +273,15 @@ exports.forgotPassword = async (req, res, next) => {
       "host"
     )}/api/v1/users/resetPassword/${resetToken}`;
 
-    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
+    const reset = `http://localhost:4200/response-reset-password/${resetToken}`;
+    // const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
+    const html = `<p>Hi ${user.email},</p><p>Please click the following link to reset your password:</p><a href="${reset}">Reset password</a>`;
     try {
       await sendEmail({
         email: user.email,
         subject: "Your password reset token (valid for 10 min)",
-        message,
+        html,
       });
 
       res.status(200).json({
