@@ -56,3 +56,52 @@ exports.updateWorkshop = async (req, res, next) => {
     return next(new AppError(err.message));
   }
 };
+
+exports.getWorkshopById = async (req, res, next) => {
+  try {
+    const workshopId = req.params.id;
+    const workshop = await Workshop.findById(workshopId);
+    if (!workshop) {
+      return next(new AppError("Workshop not found", 404));
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        workshop,
+      }
+    });
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};
+
+exports.deleteWorkshop = async (req, res, next) => {
+  try {
+    const workshopId = req.params.id;
+    const deletedWorkshop = await Workshop.findByIdAndDelete(workshopId);
+    if (deletedWorkshop) {
+      res.status(200).json({
+        status: "success",
+        data: null,
+      });
+    } else {
+      return next(new AppError("Can not find workshop", 404));
+    }
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};
+
+exports.showAllWorkshops = async (req, res, next) => {
+  try {
+    const workshops = await Workshop.find();
+    res.status(200).json({
+      status: "success",
+      data: {
+        workshops: workshops,
+      },
+    });
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};
