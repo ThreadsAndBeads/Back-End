@@ -62,6 +62,10 @@ exports.createProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 5;
+    const skip = (page - 1) * limit;
+
     let filter = {};
     if (req.query.filterBy) {
       filter = {
@@ -69,7 +73,7 @@ exports.getAllProducts = async (req, res, next) => {
         [req.query.filterBy]: req.query.filterValue,
       };
     }
-    const products = await Product.find(filter);
+    const products = await Product.find(filter).skip(skip).limit(limit);
     res.status(201).json({
       status: "success",
       data: {
