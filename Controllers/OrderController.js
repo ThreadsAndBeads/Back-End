@@ -8,7 +8,7 @@ exports.CreateOrder = async (req, res, next) => {
     try {
         const user_id = req.params.user_id;
         const cart = await Cart.findOne({ user_id }).populate("products.productId");
-        if (!cart.products.length) {
+        if (!cart || !cart.products.length) {
             return res.status(404).json({
               status: "fail",
               message: "No products in cart",
