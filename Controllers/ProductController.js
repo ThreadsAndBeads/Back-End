@@ -17,6 +17,7 @@ const upload = multer({
 });
 
 exports.resizeProductImages = async (req, res, next) => {
+  if (!req.files) return next();
   if (!req.files.images) return next();
   req.body.images = [];
   await Promise.all(
@@ -39,7 +40,7 @@ exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 exports.createProduct = async (req, res, next) => {
   try {
     const newProduct = await Product.create({
-      user_id: req.params.id,
+      user_id: req.body.user_id,
       name: req.body.name,
       category: req.body.category,
       price: req.body.price,
