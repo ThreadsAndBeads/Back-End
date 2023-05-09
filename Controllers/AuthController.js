@@ -57,7 +57,6 @@ module.exports.signup_post = async (req, res, next) => {
   const { email, password, type, name } = req.body;
 
   try {
-
     const user = await User.create({
       email,
       password,
@@ -141,8 +140,12 @@ module.exports.login_post = async (req, res, next) => {
   }
 };
 
-exports.facebookLogin = (req, res, next) => {
-  passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
+exports.facebookLogin = async (req, res, next) => {
+  try {
+    passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.facebookCallback = async (req, res, next) => {
