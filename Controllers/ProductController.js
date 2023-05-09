@@ -23,7 +23,7 @@ exports.resizeProductImages = async (req, res, next) => {
   await Promise.all(
     req.files.images.map(async (file, i) => {
       const filename = `product-${req.body.user_id}-${i + 1}.jpeg`;
-      await sharp(req.files.images[0].buffer)
+      await sharp(file.buffer)
         .resize(500, 500, {
           fit: "contain",
         })

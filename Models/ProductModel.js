@@ -8,10 +8,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "product must have a name"],
   },
-  category: {
-    type: String,
-    required: [true, "product must have a category"],
-  },
+  // category: {
+  //   type: String,
+  //   required: [true, "product must have a category"],
+  // },
   price: {
     type: Number,
     required: [true, "product must have a price"],
@@ -22,7 +22,7 @@ const productSchema = new mongoose.Schema({
       validator: function (val) {
         return val < this.price;
       },
-      message: " discount price should be below regular price",
+      message: "discount price should be below regular price",
     },
   },
   description: {
