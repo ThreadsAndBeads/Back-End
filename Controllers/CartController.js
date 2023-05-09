@@ -3,6 +3,7 @@ const Cart = require("../Models/CartModel");
 const Product = require("../Models/ProductModel");
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
+const factory = require("./handlerFactory");
 
 exports.AddToCart = async (req, res, next) => {
   try {
@@ -47,7 +48,7 @@ exports.AddToCart = async (req, res, next) => {
   }
 };
 
-exports.clearCart = async (req, res) => {
+exports.clearCart = async (req, res, next) => {
   try {
     const userId = req.params.id;
     const cart = await Cart.deleteOne({ userId });
