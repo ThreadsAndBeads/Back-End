@@ -1,7 +1,7 @@
 const Workshop = require("../Models/WorkshopModel");
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
-
+const factory = require("./handlerFactory");
 exports.createWorkshop = async (req, res, next) => {
   try {
     // console.log(req.body.seller_id);
@@ -68,30 +68,16 @@ exports.getWorkshopById = async (req, res, next) => {
       status: "success",
       data: {
         workshop,
-      }
+      },
     });
   } catch (err) {
     return next(new AppError(err.message));
   }
 };
-
-exports.deleteWorkshop = async (req, res, next) => {
-  try {
-    const workshopId = req.params.id;
-    const deletedWorkshop = await Workshop.findByIdAndDelete(workshopId);
-    if (deletedWorkshop) {
-      res.status(200).json({
-        status: "success",
-        data: null,
-      });
-    } else {
-      return next(new AppError("Can not find workshop", 404));
-    }
-  } catch (err) {
-    return next(new AppError(err.message));
-  }
-};
-
+exports.deleteWorkshop = factory.deleteOne(
+  Workshop,
+  "workshop is deleted successfully"
+);
 exports.showAllWorkshops = async (req, res, next) => {
   try {
     const workshops = await Workshop.find();

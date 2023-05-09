@@ -65,11 +65,11 @@ exports.clearCart = async (req, res) => {
 };
 
 exports.DeleteProduct = async (req, res, next) => {
-  try { 
+  try {
     const productId = req.params.id;
     const userId = req.user._id;
     const cart = await Cart.findOne({ userId });
-    if(!cart){
+    if (!cart) {
       return next(new AppError("Cart not found", 404));
     }
 
@@ -86,25 +86,26 @@ exports.DeleteProduct = async (req, res, next) => {
       status: "success",
       data: cart,
     });
-
   } catch (error) {
     return next(new AppError(error.message));
   }
-}
+};
 
 exports.getTotalProductsInCart = async (req, res) => {
   const userId = req.params.id;
   try {
-    const cart = await Cart.find({userId});
+    const cart = await Cart.find({ userId });
     let total = cart[0].products.length;
-    res.status(200).json({ 
-        status: 'success',
-        totalProducts: total });
+    res.status(200).json({
+      status: "success",
+      totalProducts: total,
+    });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ 
-        status: 'failed',
-        message: "Error retrieving cart products." });
+    res.status(500).json({
+      status: "failed",
+      message: "Error retrieving cart products.",
+    });
   }
 };
 
@@ -120,8 +121,9 @@ exports.showCart = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ 
-        status: 'failed',
-        message: "Error retrieving cart products." });
+    res.status(500).json({
+      status: "failed",
+      message: "Error retrieving cart products.",
+    });
   }
 };
