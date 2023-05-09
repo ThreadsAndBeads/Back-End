@@ -1,5 +1,6 @@
 const Product = require("../Models/ProductModel");
 const AppError = require("./../utils/appError");
+const factory = require("./handlerFactory");
 const multer = require("multer");
 const sharp = require("sharp");
 
@@ -101,23 +102,10 @@ exports.getProduct = async (req, res, next) => {
     return next(new AppError(error.message, 404));
   }
 };
-
-exports.deleteProduct = async (req, res, next) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-
-    if (!product) {
-      return next(new AppError("Product not found", 404));
-    }
-    res.status(200).json({
-      status: "success",
-      message: "product is deleted successfully",
-    });
-  } catch (error) {
-    return next(new AppError(error.message));
-  }
-};
-
+exports.deleteProduct = factory.deleteOne(
+  Product,
+  "product is deleted successfully"
+);
 exports.getHighestDiscountedProducts = async (req, res, next) => {
   try {
     // Find all products with a discount
