@@ -6,6 +6,10 @@ const workshopRoutes = require("./Routes/WorkshopRoutes");
 const orderRoutes = require("./Routes/OrderRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
 const AppError = require("./utils/appError");
+const { storage } = require("./storage/storage");
+const multer = require("multer");
+const upload = multer({ storage });
+
 
 const app = express();
 const passport = require("passport");
