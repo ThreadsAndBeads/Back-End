@@ -133,7 +133,13 @@ module.exports.login_post = async (req, res, next) => {
       expiresIn: maxAge,
     });
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(200).json({ message: "Logged in successfully", token });
+    res.status(200).json({
+      message: "Logged in successfully",
+      token,
+      data: {
+        user,
+      },
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });

@@ -2,13 +2,20 @@ const express = require("express");
 const productController = require("./../Controllers/ProductController");
 const authController = require("./../Controllers/AuthController");
 const router = express.Router();
+const multer = require("multer");
+const { storage } = require("../storage/storage");
+const upload = multer({ storage });
 
 router
   .route("/")
   .get(authController.protect, productController.getAllProducts)
-
-
-
+  .post(
+    authController.protect,
+    authController.restrictTo("seller"),
+    productController.uploadProductImages,
+    productController.resizeProductImages,
+    productController.createProduct
+  );
 router
   .route("/discountedproducts")
   .get(authController.protect, productController.getHighestDiscountedProducts);
@@ -16,13 +23,7 @@ router
 router
   .route("/:id")
   .get(authController.protect, productController.getProduct)
-  .post(
-    authController.protect,
-    authController.restrictTo("seller"),
-    productController.uploadProductImages,
-    productController.resizeProductImages,
-    productController.createProduct
-  )
+
   .delete(
     authController.protect,
     authController.restrictTo("seller"),
