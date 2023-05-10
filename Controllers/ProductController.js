@@ -2,34 +2,39 @@ const Product = require("../Models/ProductModel");
 const AppError = require("./../utils/appError");
 const multer = require("multer");
 const sharp = require("sharp");
+require("dotenv").config();
+const { storage } = require("../storage/storage");
+const upload = multer({ storage });
 
-const multerStorage = multer.memoryStorage();
-const multerFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image")) {
-    cb(null, true);
-  } else {
-    cb(new AppError("not an image please upload only images", 400), false);
-  }
-};
-const upload = multer({
-  storage: multerStorage,
-  fileFilter: multerFilter,
-});
+
+// const multerStorage = multer.memoryStorage();
+// const multerFilter = (req, file, cb) => {
+//   if (file.mimetype.startsWith("image")) {
+//     cb(null, true);
+//   } else {
+//     cb(new AppError("not an image please upload only images", 400), false);
+//   }
+// };
+// const upload = multer({
+//   storage: multerStorage,
+//   fileFilter: multerFilter,
+// });
 
 exports.resizeProductImages = async (req, res, next) => {
+  console.log(req.file);
   if (!req.files) return next();
   if (!req.files.images) return next();
   req.body.images = [];
   await Promise.all(
     req.files.images.map(async (file, i) => {
       const filename = `product-${req.body.user_id}-${i + 1}.jpeg`;
-      await sharp(file.buffer)
-        .resize(500, 500, {
-          fit: "contain",
-        })
-        .toFormat("jpeg")
-        .jpeg({ quality: 90 })
-        .toFile(`public/img/products/${filename}`);
+      // await sharp(file.buffer)
+      //   // .resize(500, 500, {
+      //   //   fit: "contain",
+      //   // })
+      //   .toFormat("jpeg")
+      //   .jpeg({ quality: 90 })
+      //   .toFile(`public/img/products/${filename}`);
       req.body.images.push(filename);
     })
   );
@@ -39,6 +44,7 @@ exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 
 exports.createProduct = async (req, res, next) => {
   try {
+
     const newProduct = await Product.create({
       user_id: req.body.user_id,
       name: req.body.name,
@@ -48,6 +54,7 @@ exports.createProduct = async (req, res, next) => {
       description: req.body.description,
       images: req.body.images,
     });
+    console.log(req.body);
 
     res.status(201).json({
       status: "success",
