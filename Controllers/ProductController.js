@@ -1,5 +1,6 @@
 const Product = require("../Models/ProductModel");
 const AppError = require("./../utils/appError");
+const factory = require("./handlerFactory");
 const multer = require("multer");
 const sharp = require("sharp");
 require("dotenv").config();
@@ -42,6 +43,7 @@ exports.resizeProductImages = async (req, res, next) => {
 };
 exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 
+// exports.createProduct = factory.createOne(Product);
 exports.createProduct = async (req, res, next) => {
   try {
 
@@ -92,38 +94,15 @@ exports.getAllProducts = async (req, res, next) => {
   }
 };
 
-exports.getProduct = async (req, res, next) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) {
-      return next(new AppError("Product not found for the given ID", 404));
-    }
-    res.status(201).json({
-      status: "success",
-      data: {
-        product: product,
-      },
-    });
-  } catch (error) {
-    return next(new AppError(error.message, 404));
-  }
-};
-
-exports.deleteProduct = async (req, res, next) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-
-    if (!product) {
-      return next(new AppError("Product not found", 404));
-    }
-    res.status(200).json({
-      status: "success",
-      message: "product is deleted successfully",
-    });
-  } catch (error) {
-    return next(new AppError(error.message));
-  }
-};
+exports.getProduct = factory.getOne(
+  Product,
+  "Product not found for the given ID"
+);
+exports.deleteProduct = factory.deleteOne(
+  Product,
+  "product is deleted successfully"
+);
+exports.updateProduct = factory.updateOne(Product, "can not find product");
 
 exports.getHighestDiscountedProducts = async (req, res, next) => {
   try {
@@ -150,31 +129,5 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
     });
   } catch (error) {
     return next(new AppError(error.message));
-  }
-};
-
-exports.updateProduct = async (req, res, next) => {
-  try {
-    const productId = req.params.id;
-    const updates = req.body;
-    const options = { new: true };
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      updates,
-      options
-    );
-    console.log(updatedProduct);
-    if (updatedProduct) {
-      res.status(200).json({
-        status: "success",
-        data: {
-          product: updatedProduct,
-        },
-      });
-    } else {
-      return next(new AppError("can not find product", 404));
-    }
-  } catch (err) {
-    return next(new AppError(err.message));
   }
 };
