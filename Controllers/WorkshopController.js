@@ -68,7 +68,7 @@ exports.getWorkshopById = async (req, res, next) => {
       status: "success",
       data: {
         workshop,
-      }
+      },
     });
   } catch (err) {
     return next(new AppError(err.message));
