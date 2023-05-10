@@ -164,7 +164,7 @@ exports.facebookCallback = async (req, res, next) => {
           return next(new AppError(err.message));
         }
         if (!user) {
-          return res.redirect("/signup");
+          return res.redirect("/");
         }
         req.login(user, (err) => {
           if (err) {
