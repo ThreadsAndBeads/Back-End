@@ -22,9 +22,9 @@ router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
 router
-    .route("/sellers")
-    .get(authController.protect, UserController.getAllSellers);
-    
+  .route("/sellers")
+  .get(authController.protect, UserController.getAllSellers);
+
 router.route("/:id").get(authController.protect, UserController.getUserById);
 
 module.exports = router;
