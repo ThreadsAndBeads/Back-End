@@ -2,6 +2,9 @@ const express = require("express");
 const productController = require("./../Controllers/ProductController");
 const authController = require("./../Controllers/AuthController");
 const router = express.Router();
+const multer = require("multer");
+const { storage } = require("../storage/storage");
+const upload = multer({ storage });
 
 router
   .route("/")

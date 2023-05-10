@@ -22,13 +22,12 @@ const upload = multer({ storage });
 // });
 
 exports.resizeProductImages = async (req, res, next) => {
-  console.log(req.file);
   if (!req.files) return next();
   if (!req.files.images) return next();
   req.body.images = [];
   await Promise.all(
     req.files.images.map(async (file, i) => {
-      const filename = `product-${req.body.user_id}-${i + 1}.jpeg`;
+      const filename = file.path;
       // await sharp(file.buffer)
       //   // .resize(500, 500, {
       //   //   fit: "contain",
@@ -38,15 +37,15 @@ exports.resizeProductImages = async (req, res, next) => {
       //   .toFile(`public/img/products/${filename}`);
       req.body.images.push(filename);
     })
-  );
+    );
   next();
 };
+
 exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 
 // exports.createProduct = factory.createOne(Product);
 exports.createProduct = async (req, res, next) => {
   try {
-
     const newProduct = await Product.create({
       user_id: req.body.user_id,
       name: req.body.name,
@@ -56,7 +55,6 @@ exports.createProduct = async (req, res, next) => {
       description: req.body.description,
       images: req.body.images,
     });
-    console.log(req.body);
 
     res.status(201).json({
       status: "success",
