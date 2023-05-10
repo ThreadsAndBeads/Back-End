@@ -3,6 +3,9 @@ const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const multer = require("multer");
 const sharp = require("sharp");
+const express = require("express");
+const fs=require("fs/promises");
+const app = express();
 
 const multerStorage = multer.memoryStorage();
 const multerFilter = (req, file, cb) => {
@@ -124,3 +127,19 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
+
+
+
+
+exports.getAllCategories = async (req, res, next) => {
+  try {
+    const categoriesJson = await fs.readFile('categories.json');
+    const categories = JSON.parse(categoriesJson);
+    res.json (categories);
+
+    
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+};
+
