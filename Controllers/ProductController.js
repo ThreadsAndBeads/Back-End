@@ -6,23 +6,11 @@ const sharp = require("sharp");
 const express = require("express");
 const fs=require("fs/promises");
 const app = express();
+
 require("dotenv").config();
 const { storage } = require("../storage/storage");
 const upload = multer({ storage });
 
-
-// const multerStorage = multer.memoryStorage();
-// const multerFilter = (req, file, cb) => {
-//   if (file.mimetype.startsWith("image")) {
-//     cb(null, true);
-//   } else {
-//     cb(new AppError("not an image please upload only images", 400), false);
-//   }
-// };
-// const upload = multer({
-//   storage: multerStorage,
-//   fileFilter: multerFilter,
-// });
 
 exports.resizeProductImages = async (req, res, next) => {
   if (!req.files) return next();
@@ -31,13 +19,6 @@ exports.resizeProductImages = async (req, res, next) => {
   await Promise.all(
     req.files.images.map(async (file, i) => {
       const filename = file.path;
-      // await sharp(file.buffer)
-      //   // .resize(500, 500, {
-      //   //   fit: "contain",
-      //   // })
-      //   .toFormat("jpeg")
-      //   .jpeg({ quality: 90 })
-      //   .toFile(`public/img/products/${filename}`);
       req.body.images.push(filename);
     })
     );
@@ -46,29 +27,8 @@ exports.resizeProductImages = async (req, res, next) => {
 
 exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 
-// exports.createProduct = factory.createOne(Product);
-exports.createProduct = async (req, res, next) => {
-  try {
-    const newProduct = await Product.create({
-      user_id: req.body.user_id,
-      name: req.body.name,
-      category: req.body.category,
-      price: req.body.price,
-      priceDiscount: req.body.priceDiscount,
-      description: req.body.description,
-      images: req.body.images,
-    });
+exports.createProduct = factory.createOne(Product);
 
-    res.status(201).json({
-      status: "success",
-      data: {
-        product: newProduct,
-      },
-    });
-  } catch (error) {
-    return next(new AppError(error.message));
-  }
-};
 
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -99,10 +59,12 @@ exports.getProduct = factory.getOne(
   Product,
   "Product not found for the given ID"
 );
+
 exports.deleteProduct = factory.deleteOne(
   Product,
   "product is deleted successfully"
 );
+
 exports.updateProduct = factory.updateOne(Product, "can not find product");
 
 exports.getHighestDiscountedProducts = async (req, res, next) => {
