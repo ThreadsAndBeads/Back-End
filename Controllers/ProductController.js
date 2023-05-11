@@ -2,6 +2,11 @@ const Product = require("../Models/ProductModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const multer = require("multer");
+const sharp = require("sharp");
+const express = require("express");
+const fs=require("fs/promises");
+const app = express();
+
 require("dotenv").config();
 const { storage } = require("../storage/storage");
 const upload = multer({ storage });
@@ -89,3 +94,19 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
+
+
+
+
+exports.getAllCategories = async (req, res, next) => {
+  try {
+    const categoriesJson = await fs.readFile('categories.json');
+    const categories = JSON.parse(categoriesJson);
+    res.json (categories);
+
+    
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+};
+

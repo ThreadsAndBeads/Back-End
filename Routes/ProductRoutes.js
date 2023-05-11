@@ -16,6 +16,7 @@ router
     productController.resizeProductImages,
     productController.createProduct
   );
+  router.get("/categories", productController.getAllCategories);
 router
   .route("/discountedproducts")
   .get(authController.protect, productController.getHighestDiscountedProducts);
@@ -36,5 +37,7 @@ router
     productController.resizeProductImages,
     productController.updateProduct
   );
+
+  // router.get("/categories", productController.getAllCategories);
 
 module.exports = router;
