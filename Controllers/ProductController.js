@@ -54,10 +54,12 @@ exports.getProduct = factory.getOne(
   Product,
   "Product not found for the given ID"
 );
+
 exports.deleteProduct = factory.deleteOne(
   Product,
   "product is deleted successfully"
 );
+
 exports.updateProduct = factory.updateOne(Product, "can not find product");
 
 exports.getHighestDiscountedProducts = async (req, res, next) => {

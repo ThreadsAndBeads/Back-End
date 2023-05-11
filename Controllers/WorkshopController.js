@@ -16,11 +16,14 @@ exports.resizeWorkshopImage = async (req, res, next) => {
 
 exports.uploadWorkshopImage = upload.single("image");
 exports.createWorkshop = factory.createOne(Workshop);
+
 exports.updateWorkshop = factory.updateOne(Workshop, "can not find Workshop");
+
 exports.deleteWorkshop = factory.deleteOne(
   Workshop,
   "workshop is deleted successfully"
 );
+
 exports.getWorkshopById = factory.getOne(Workshop, "Workshop not found");
 exports.saveSellerData = async (req, res, next) => {
   const user = await User.findById(req.body.seller_id);
