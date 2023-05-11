@@ -37,10 +37,13 @@ exports.showAllWorkshops = async (req, res, next) => {
     const limit = req.query.limit * 1 || 5;
     const skip = (page - 1) * limit;
     const workshops = await Workshop.find().skip(skip).limit(limit);
+    const count = await Workshop.countDocuments();
+
     res.status(200).json({
       status: "success",
       data: {
         workshops: workshops,
+        totalRecords: count,
       },
     });
   } catch (err) {
