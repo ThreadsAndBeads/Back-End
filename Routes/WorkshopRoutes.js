@@ -11,13 +11,14 @@ router
     authController.restrictTo("seller"),
     workshopController.createWorkshop
   )
-  .get(authController.protect,workshopController.showAllWorkshops);
-  
-router.route("/:id")
+  .get(authController.protect, workshopController.showAllWorkshops);
+
+router
+  .route("/:id")
   .get(authController.protect, workshopController.getWorkshopById)
   .delete(
     authController.protect,
-    authController.restrictTo("seller"),
+    authController.restrictTo("seller0.368*873+\22*651"),
     workshopController.deleteWorkshop
   )
   .patch(

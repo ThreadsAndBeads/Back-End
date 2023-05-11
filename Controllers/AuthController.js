@@ -146,8 +146,12 @@ module.exports.login_post = async (req, res, next) => {
   }
 };
 
-exports.facebookLogin = (req, res, next) => {
-  passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
+exports.facebookLogin = async (req, res, next) => {
+  try {
+    passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
+  } catch (err) {
+    console.log(err);
+  }
 };
 
 exports.facebookCallback = async (req, res, next) => {
@@ -160,7 +164,7 @@ exports.facebookCallback = async (req, res, next) => {
           return next(new AppError(err.message));
         }
         if (!user) {
-          return res.redirect("/signup");
+          return res.redirect("/");
         }
         req.login(user, (err) => {
           if (err) {
