@@ -30,7 +30,10 @@ exports.saveSellerData = async (req, res, next) => {
 };
 exports.showAllWorkshops = async (req, res, next) => {
   try {
-    const workshops = await Workshop.find();
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 5;
+    const skip = (page - 1) * limit;
+    const workshops = await Workshop.find().skip(skip).limit(limit);
     res.status(200).json({
       status: "success",
       data: {
