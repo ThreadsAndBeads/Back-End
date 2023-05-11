@@ -4,6 +4,10 @@ const workshopSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "Workshop must have a user id "],
   },
+  seller_name: {
+    type: String,
+    // required: [true, "Workshop must have a user name "],
+  },
   title: {
     type: String,
     required: [true, "Workshop must have a title"],
@@ -20,8 +24,8 @@ const workshopSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
-  images: {
-    type: [String],
+  image: {
+    type: String,
     required: [true, "Workshop must have a photo"],
   },
   startDate: {
