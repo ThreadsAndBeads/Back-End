@@ -22,7 +22,7 @@ const workshopSchema = new mongoose.Schema({
   },
   images: {
     type: [String],
-    required: [true, "Workshop must have a price"],
+    required: [true, "Workshop must have a photo"],
   },
   startDate: {
     type: Date,
