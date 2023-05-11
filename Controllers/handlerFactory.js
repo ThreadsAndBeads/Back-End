@@ -14,6 +14,7 @@ exports.deleteOne = (Model, errorMsg) => async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
+
 exports.updateOne = (Model, errorMsg) => async (req, res, next) => {
   try {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
@@ -35,6 +36,7 @@ exports.updateOne = (Model, errorMsg) => async (req, res, next) => {
     return next(new AppError(err.message));
   }
 };
+
 exports.createOne = (Model, errorMsg) => async (req, res, next) => {
   try {
     const doc = await Model.create(req.body);

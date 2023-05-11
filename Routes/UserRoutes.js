@@ -21,10 +21,11 @@ router.get("/logout", authController.logout_get);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
-router
-  .route("/sellers")
-  .get(authController.protect, UserController.getAllSellers);
-
-router.route("/:id").get(authController.protect, UserController.getUserById);
+router.route("/sellers")
+    .get(authController.protect, UserController.getAllSellers);
+    
+router.route("/:id")
+    .get(authController.protect, UserController.getUserById)
+    .patch(authController.protect, UserController.updateUser);
 
 module.exports = router;
