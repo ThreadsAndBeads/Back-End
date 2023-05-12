@@ -1,16 +1,17 @@
 const Product = require("../Models/ProductModel");
+const Workshop = require("../Models/WorkshopModel");
+const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const multer = require("multer");
 const sharp = require("sharp");
 const express = require("express");
-const fs=require("fs/promises");
+const fs = require("fs/promises");
 const app = express();
 
 require("dotenv").config();
 const { storage } = require("../storage/storage");
 const upload = multer({ storage });
-
 
 exports.resizeProductImages = async (req, res, next) => {
   if (!req.files) return next();
@@ -21,14 +22,13 @@ exports.resizeProductImages = async (req, res, next) => {
       const filename = file.path;
       req.body.images.push(filename);
     })
-    );
+  );
   next();
 };
 
 exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
 
 exports.createProduct = factory.createOne(Product);
-
 
 exports.getAllProducts = async (req, res, next) => {
   try {
@@ -95,18 +95,31 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
   }
 };
 
-
-
-
 exports.getAllCategories = async (req, res, next) => {
   try {
-    const categoriesJson = await fs.readFile('categories.json');
+    const categoriesJson = await fs.readFile("categories.json");
     const categories = JSON.parse(categoriesJson);
-    res.json (categories);
-
-    
+    res.json(categories);
   } catch (error) {
     return next(new AppError(error.message));
   }
 };
 
+exports.search = async (req, res, next) => {
+  try {
+    const products = await Product.find({
+      $or: [{ name: { $regex: req.query.q, $options: "i" } }],
+    });
+    const workshops = await Workshop.find({
+      $or: [{ title: { $regex: req.query.q, $options: "i" } }],
+    });
+
+    results = {
+      products,
+      workshops,
+    };
+    res.json(results);
+  } catch (err) {
+    return next(new AppError(err.message));
+  }
+};
