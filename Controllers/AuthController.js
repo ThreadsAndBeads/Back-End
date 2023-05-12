@@ -1,6 +1,8 @@
 const User = require("../Models/UserModel");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
+
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const { promisify } = require("util");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
@@ -277,8 +279,6 @@ exports.forgotPassword = async (req, res, next) => {
     )}/api/v1/users/resetPassword/${resetToken}`;
 
     const reset = `http://localhost:4200/response-reset-password/${resetToken}`;
-    // const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
-
     const html = `<p>Hi ${user.email},</p><p>Please click the following link to reset your password:</p><a href="${reset}">Reset password</a>`;
     try {
       await sendEmail({
@@ -349,4 +349,45 @@ exports.restrictTo = (...roles) => {
     }
     next();
   };
+};
+exports.googleLoginTest = async (req, res, next) => {
+  try {
+    let user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      // user = new User({
+      //   email: req.body.email,
+      //   name: req.body.name,
+      //   type: "customer",
+      //   password: req.body.password,
+      //   isEmailVerified: true,
+      // });
+      // await user.save();
+      // createSendToken(user, 200, res);
+
+      user = await User.create({
+        email: req.body.email,
+        password: req.body.password,
+        imageUrl: req.body.imageUrl,
+        type: "customer",
+        name: req.body.name,
+        isEmailVerified: true,
+      });
+    }
+    const token = createToken(user._id);
+    console.log(token);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(201).json({
+      message: "Logged in successfully",
+      token,
+      data: {
+        user,
+      },
+    });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({
+      status: "fail",
+      errors,
+    });
+  }
 };

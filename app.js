@@ -9,8 +9,6 @@ const AppError = require("./utils/appError");
 const { storage } = require("./storage/storage");
 const multer = require("multer");
 const upload = multer({ storage });
-
-
 const app = express();
 const passport = require("passport");
 const dotenv = require("dotenv");
@@ -46,7 +44,14 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
