@@ -1,6 +1,9 @@
 //user controller
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
+const factory = require("./handlerFactory");
+
+exports.updateUser = factory.updateOne(User, "user is not found!");
 
 exports.getUserById = async (req, res, next) => {
   try {
@@ -13,7 +16,7 @@ exports.getUserById = async (req, res, next) => {
     res.status(200).json({
       status: "success",
       data: {
-        sellers: user,
+        user: user,
       },
     });
   } catch (err) {

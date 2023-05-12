@@ -9,15 +9,19 @@ router
   .post(
     authController.protect,
     authController.restrictTo("seller"),
+    workshopController.uploadWorkshopImage,
+    workshopController.resizeWorkshopImage,
+    workshopController.saveSellerData,
     workshopController.createWorkshop
   )
-  .get(authController.protect,workshopController.showAllWorkshops);
-  
-router.route("/:id")
+  .get(authController.protect, workshopController.showAllWorkshops);
+
+router
+  .route("/:id")
   .get(authController.protect, workshopController.getWorkshopById)
   .delete(
     authController.protect,
-    authController.restrictTo("seller"),
+    authController.restrictTo("seller0.368*873+\22*651"),
     workshopController.deleteWorkshop
   )
   .patch(
@@ -25,12 +29,6 @@ router.route("/:id")
     authController.restrictTo("seller"),
     workshopController.updateWorkshop
   );
-
-  //router.route("/:id").get(workshopController.getWorkshopById);
-  router.route("/:id/delete").delete( workshopController.deleteWorkshop);
-  router.route("/allworkshops").get(workshopController.showAllWorkshops);
-
-
 
 
 module.exports = router;
