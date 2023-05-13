@@ -9,7 +9,7 @@ exports.AddToCart = async (req, res, next) => {
   try {
     const productId = req.body.products.productId;
     const product = await Product.findById(productId);
-    const user = await User.findById(req.body.userId);
+    const user = await User.findById(req.user._id);
     let cart = await Cart.findOne({ userId: req.body.userId });
 
     if (!product) {
