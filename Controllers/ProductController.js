@@ -8,6 +8,7 @@ const sharp = require("sharp");
 const express = require("express");
 const fs = require("fs/promises");
 const app = express();
+const APIFeatures = require("./../utils/apiFeatures");
 
 require("dotenv").config();
 const { storage } = require("../storage/storage");
@@ -32,20 +33,15 @@ exports.createProduct = factory.createOne(Product);
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 5;
-    const skip = (page - 1) * limit;
-
     let filter = {};
-    if (req.query.filterBy) {
-      filter = {
-        ...filter,
-        [req.query.filterBy]: req.query.filterValue,
-      };
-    }
+    const features = new APIFeatures(Product.find(filter), req.query)
+        .filter()
+        .limitFields()
+        .paginate();
 
     const totalRecords = await Product.countDocuments();
-    const products = await Product.find(filter).skip(skip).limit(limit);
+    const products = await features.query;
+
     res.status(201).json({
       status: "success",
       data: {
