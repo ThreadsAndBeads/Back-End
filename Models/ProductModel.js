@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const productSchema = new mongoose.Schema({
-  
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "product must have a user id "],
@@ -9,11 +8,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "product must have a name"],
   },
-   category: {
-      type: String,
-      required: [true, "product must have a category"],
-    },
-   price: {
+  //  category: {
+  //     type: String,
+  //     required: [true, "product must have a category"],
+  //   },
+  price: {
     type: Number,
     required: [true, "product must have a price"],
   },
