@@ -43,16 +43,20 @@ exports.getAllProducts = async (req, res, next) => {
         [req.query.filterBy]: req.query.filterValue,
       };
     }
+
+    const totalRecords = await Product.countDocuments();
     const products = await Product.find(filter).skip(skip).limit(limit);
     res.status(201).json({
       status: "success",
       data: {
         products: products,
+        totalRecords: totalRecords,
       },
     });
   } catch (error) {
     return next(new AppError(error.message));
   }
+
 };
 
 exports.getProduct = factory.getOne(
