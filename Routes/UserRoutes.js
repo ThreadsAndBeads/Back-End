@@ -14,18 +14,21 @@ router.post("/login", authController.login_post);
 router.get("/facebook", authController.facebookLogin);
 router.get("/facebook/callback", authController.facebookCallback);
 
-router.get("/auth/google", authController.googleLogin);
-router.get("/auth/google/callback", authController.googleCallback);
+// router.get("/auth/google", authController.googleLogin);
+router.post("/google", authController.googleLoginTest);
+// router.get("/auth/google/callback", authController.googleCallback);
 
 router.get("/logout", authController.logout_get);
 router.post("/forgotPassword", authController.forgotPassword);
 router.patch("/resetPassword/:token", authController.resetPassword);
 
-router.route("/sellers")
-    .get(authController.protect, UserController.getAllSellers);
-    
-router.route("/:id")
-    .get(authController.protect, UserController.getUserById)
-    .patch(authController.protect, UserController.updateUser);
+router
+  .route("/sellers")
+  .get(authController.protect, UserController.getAllSellers);
+
+router
+  .route("/:id")
+  .get(authController.protect, UserController.getUserById)
+  .patch(authController.protect, UserController.updateUser);
 
 module.exports = router;

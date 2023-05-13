@@ -9,6 +9,9 @@ router
   .post(
     authController.protect,
     authController.restrictTo("seller"),
+    workshopController.uploadWorkshopImage,
+    workshopController.resizeWorkshopImage,
+    workshopController.saveSellerData,
     workshopController.createWorkshop
   )
   .get(authController.protect, workshopController.showAllWorkshops);
@@ -26,7 +29,6 @@ router
     authController.restrictTo("seller"),
     workshopController.updateWorkshop
   );
-
 
 
 module.exports = router;
