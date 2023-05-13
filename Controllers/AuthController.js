@@ -354,16 +354,6 @@ exports.googleLoginTest = async (req, res, next) => {
   try {
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
-      // user = new User({
-      //   email: req.body.email,
-      //   name: req.body.name,
-      //   type: "customer",
-      //   password: req.body.password,
-      //   isEmailVerified: true,
-      // });
-      // await user.save();
-      // createSendToken(user, 200, res);
-
       user = await User.create({
         email: req.body.email,
         password: req.body.password,
