@@ -3,21 +3,19 @@ const cartController = require("./../Controllers/CartController");
 const authController = require("./../Controllers/AuthController");
 const router = express.Router();
 
-router.route("/").post( authController.protect,cartController.AddToCart);
 router
-  .route("/:id/clear")
-  .post(authController.protect, cartController.clearCart);
+    .route("/")
+    .post(authController.protect, cartController.AddToCart)
+    .get(authController.protect, cartController.showCart)
+    .delete(authController.protect, cartController.clearCart);
 
 router
-  .route("/:id/count")
+  .route("/count")
   .get(authController.protect, cartController.getTotalProductsInCart);
 
 router
-  .route("/:id/showcart")
-  .get(authController.protect, cartController.showCart);
-
-router
-  .route("/:id/deleteproduct")
-  .patch(authController.protect, cartController.DeleteProduct);
+  .route("/:id")
+  .delete(authController.protect, cartController.DeleteProduct)
+  .patch(authController.protect, cartController.updateCart);
 
 module.exports = router;
