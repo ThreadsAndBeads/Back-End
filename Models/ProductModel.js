@@ -18,7 +18,7 @@ const productSchema = new mongoose.Schema({
     },
     inStock: {
         type: Number,
-        required: [true, "product must have in stock quantity"],
+        // required: [true, "product must have in stock quantity"],
     },
     priceDiscount: {
         type: Number,
