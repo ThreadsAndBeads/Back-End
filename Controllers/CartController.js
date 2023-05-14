@@ -107,13 +107,7 @@ exports.getTotalProductsInCart = async (req, res) => {
     const cart = await Cart.findOne({ userId });
     let total = 0;
     if(cart){
-      console.log(cart)
-      if(cart.products.length > 1){
-        cart.products.forEach((product) => (total += product.quantity));
-      }
-      else{
-        total = cart.products[0].quantity;
-      }
+      cart.products.forEach((product) => (total += product.quantity));
     }
     
     res.status(200).json({
