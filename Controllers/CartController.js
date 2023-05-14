@@ -50,7 +50,7 @@ exports.AddToCart = async (req, res, next) => {
 
 exports.clearCart = async (req, res, next) => {
   try {
-    const userId = req.params.id;
+    const userId = req.user._id;
     const cart = await Cart.deleteOne({ userId });
 
     if (!cart) {
@@ -83,6 +83,15 @@ exports.DeleteProduct = async (req, res, next) => {
     cart.products.splice(productIndex, 1);
     await cart.save();
 
+
+    if (cart.products.length == 0) {
+        await Cart.deleteOne({ _id: cart._id });
+        return res.status(200).json({
+            status: "success",
+            message: "Cart is empty",
+        });
+    }
+
     res.status(200).json({
       status: "success",
       data: cart,
@@ -93,10 +102,14 @@ exports.DeleteProduct = async (req, res, next) => {
 };
 
 exports.getTotalProductsInCart = async (req, res) => {
-  const userId = req.params.id;
+  const userId = req.user._id;
   try {
-    const cart = await Cart.find({ userId });
-    let total = cart[0].products.length;
+    const cart = await Cart.findOne({ userId });
+    let total = 0;
+    if(cart){
+      total = cart.products.length;
+    }
+    
     res.status(200).json({
       status: "success",
       totalProducts: total,
@@ -111,7 +124,7 @@ exports.getTotalProductsInCart = async (req, res) => {
 };
 
 exports.showCart = async (req, res) => {
-  const userId = req.params.id;
+  const userId = req.user._id;
   try {
     const cart = await Cart.findOne({ userId }).populate("products.productId");
     res.status(200).json({
@@ -128,3 +141,43 @@ exports.showCart = async (req, res) => {
     });
   }
 };
+
+exports.updateCart = async (req, res, next) => {
+  try{
+    const productId = req.params.id;
+    const user = await User.findById(req.user._id);
+    const product = await Product.findById(productId);
+    let cart = await Cart.findOne({ userId: user._id });
+    console.log(product, user, cart);
+
+    if (!product) {
+        return next(new AppError("Product not found", 404));
+    }
+
+    if (!user) {
+        return next(new AppError("user not found", 404));
+    }
+
+    if (!cart) {
+        return next(new AppError("user cart not found", 404));
+    }
+
+    let productIndex = cart.products.findIndex((p) => p.productId == productId);
+
+    if (productIndex !== -1) {
+        cart.products[productIndex].quantity = req.body.quantity;
+    } else {
+        return next(new AppError("Product not found in cart", 404));
+    }
+    await cart.save();
+
+    res.status(201).json({
+        status: "success",
+        data: {
+            cart: cart,
+        },
+    });
+  }catch(error){
+    return next(new AppError(error.message));
+  }
+}
