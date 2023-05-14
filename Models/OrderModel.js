@@ -33,6 +33,23 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  address: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  client_name: {
+    type: String,
+    required: true,
+  },
+  payment_method: {
+    type: String,
+    enum: ["cash", "credit"],
+    default: "cash",
+  },
 });
 
 const Order = mongoose.model("Order", orderSchema);
