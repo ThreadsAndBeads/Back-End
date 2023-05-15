@@ -2,7 +2,17 @@
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
+const multer = require("multer");
+const { storage } = require("../storage/storage");
+const upload = multer({ storage });
+exports.resizeUserImage = async (req, res, next) => {
+  if (!req.file) return next();
+  console.log(req.file.path);
+  req.body.image = req.file.path;
+  next();
+};
 
+exports.uploadUserImage = upload.single("image");
 exports.updateUser = factory.updateOne(User, "user is not found!");
 
 exports.getUserById = async (req, res, next) => {
