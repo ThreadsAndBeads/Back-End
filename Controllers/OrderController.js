@@ -1,19 +1,13 @@
 const Cart = require("../Models/CartModel");
-const Product = require("../Models/ProductModel");
-const User = require("../Models/UserModel");
+
 const Order = require("../Models/OrderModel");
 const AppError = require("./../utils/appError");
+const factory = require("./handlerFactory");
 
 exports.CreateOrder = async (req, res, next) => {
   try {
-    // const user_id = req.params.user_id;
     const userId = req.body.userId;
-    // console.log(userId);
-    // let userId = req.body.userId;
-    // console.log(newOrder);
-    // .populate("products.productId");
     const cart = await Cart.findOne({ userId }).populate("products.productId");
-    // console.log(cart, "hi");
     if (!cart || !cart.products.length) {
       return res.status(404).json({
         status: "fail",
@@ -30,8 +24,6 @@ exports.CreateOrder = async (req, res, next) => {
       phone: req.body.phone,
       client_name: req.body.client_name,
     });
-    // const newOrder = new Order(req.body);
-
     const totalPrice = cart.products.reduce(
       (total, product) => total + product.quantity * product.productId.price,
       0
@@ -48,6 +40,27 @@ exports.CreateOrder = async (req, res, next) => {
         Order: newOrder,
       },
     });
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+};
+exports.ManageOrder = async (req, res, next) => {
+  try {
+    const orderId = req.body.orderId;
+    let order = await Order.findById(orderId);
+    if (!order) {
+      return next(new AppError("order not found", 404));
+    }
+    order.orderStatus = req.body.orderStatus;
+    order.markModified("orderStatus");
+    await order.save({ validateBeforeSave: false });
+    res.status(200).json({
+      status: "success",
+      data: {
+        data: order,
+      },
+    });
+    console.log(order);
   } catch (error) {
     return next(new AppError(error.message));
   }

@@ -6,5 +6,16 @@ const router = express.Router();
 
 router
   .route("/createOrder")
-  .post(authController.protect, orderController.CreateOrder);
+  .post(
+    authController.protect,
+    authController.restrictTo("seller"),
+    orderController.CreateOrder
+  );
+router
+  .route("/manageOrder")
+  .patch(
+    authController.protect,
+    authController.restrictTo("seller"),
+    orderController.ManageOrder
+  );
 module.exports = router;
