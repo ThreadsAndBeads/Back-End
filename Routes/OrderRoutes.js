@@ -6,9 +6,5 @@ const router = express.Router();
 
 router
   .route("/createOrder")
-  .post(
-    authController.protect,
-    authController.restrictTo("seller"),
-    orderController.CreateOrder
-  );
+  .post(authController.protect, orderController.CreateOrder);
 module.exports = router;

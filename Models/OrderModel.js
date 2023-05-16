@@ -33,9 +33,18 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  address: {
-    type: String,
-    required: true,
+  clientAddress: {
+    apartmentNo: {
+      type: String,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
   },
   phone: {
     type: String,
