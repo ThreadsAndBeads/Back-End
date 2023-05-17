@@ -83,13 +83,12 @@ exports.DeleteProduct = async (req, res, next) => {
     cart.products.splice(productIndex, 1);
     await cart.save();
 
-
     if (cart.products.length == 0) {
-        await Cart.deleteOne({ _id: cart._id });
-        return res.status(200).json({
-            status: "success",
-            message: "Cart is empty",
-        });
+      await Cart.deleteOne({ _id: cart._id });
+      return res.status(200).json({
+        status: "success",
+        message: "Cart is empty",
+      });
     }
 
     res.status(200).json({
@@ -106,10 +105,10 @@ exports.getTotalProductsInCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ userId });
     let total = 0;
-    if(cart){
+    if (cart) {
       cart.products.forEach((product) => (total += product.quantity));
     }
-    
+
     res.status(200).json({
       status: "success",
       totalProducts: total,
@@ -143,7 +142,7 @@ exports.showCart = async (req, res) => {
 };
 
 exports.updateCart = async (req, res, next) => {
-  try{
+  try {
     const productId = req.params.id;
     const user = await User.findById(req.user._id);
     const product = await Product.findById(productId);
@@ -151,33 +150,33 @@ exports.updateCart = async (req, res, next) => {
     console.log(product, user, cart);
 
     if (!product) {
-        return next(new AppError("Product not found", 404));
+      return next(new AppError("Product not found", 404));
     }
 
     if (!user) {
-        return next(new AppError("user not found", 404));
+      return next(new AppError("user not found", 404));
     }
 
     if (!cart) {
-        return next(new AppError("user cart not found", 404));
+      return next(new AppError("user cart not found", 404));
     }
 
     let productIndex = cart.products.findIndex((p) => p.productId == productId);
 
     if (productIndex !== -1) {
-        cart.products[productIndex].quantity = req.body.quantity;
+      cart.products[productIndex].quantity = req.body.quantity;
     } else {
-        return next(new AppError("Product not found in cart", 404));
+      return next(new AppError("Product not found in cart", 404));
     }
     await cart.save();
 
     res.status(201).json({
-        status: "success",
-        data: {
-            cart: cart,
-        },
+      status: "success",
+      data: {
+        cart: cart,
+      },
     });
-  }catch(error){
+  } catch (error) {
     return next(new AppError(error.message));
   }
-}
+};

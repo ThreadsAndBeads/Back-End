@@ -3,6 +3,7 @@ const productSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "product must have a user id "],
+    ref: "Users",
   },
   name: {
     type: String,
