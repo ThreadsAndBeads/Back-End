@@ -83,13 +83,13 @@ exports.DeleteProduct = async (req, res, next) => {
     cart.products.splice(productIndex, 1);
     await cart.save();
 
-    if (cart.products.length == 0) {
-      await Cart.deleteOne({ _id: cart._id });
-      return res.status(200).json({
-        status: "success",
-        message: "Cart is empty",
-      });
-    }
+    //if (cart.products.length == 0) {
+    //    await Cart.deleteOne({ _id: cart._id });
+    //    return res.status(200).json({
+    //        status: "success",
+    //        message: "Cart is empty",
+    //    });
+    //}
 
     res.status(200).json({
       status: "success",
