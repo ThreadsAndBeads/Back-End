@@ -12,10 +12,18 @@ router
     orderController.CreateOrder
   );
 router
-  .route("/manageOrder")
-  .patch(
+  .route("/:sellerId")
+  .get(
     authController.protect,
     authController.restrictTo("seller"),
-    orderController.ManageOrder
-  );
+    orderController.GetSellerOrder
+  ),
+  router
+    .route("/manageOrder")
+    .patch(
+      authController.protect,
+      authController.restrictTo("seller"),
+      orderController.ManageOrder
+    );
+
 module.exports = router;
