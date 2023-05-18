@@ -25,11 +25,14 @@ const productSchema = new mongoose.Schema({
     type: Number,
     validate: {
       validator: function (val) {
-        return val < this.price;
+        console.log(val, this.get('price'));
+        return val < this.get('price');
       },
       message: "discount price should be below regular price",
     },
   },
+  
+  
   description: {
     type: String,
     trim: true,
