@@ -36,6 +36,7 @@ exports.getAllProducts = async (req, res, next) => {
     let filter = {};
     const features = new APIFeatures(Product.find(filter), req.query)
         .filter()
+        .sort()
         .limitFields()
         .paginate();
 
