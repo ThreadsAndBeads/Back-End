@@ -5,7 +5,7 @@ const Order = require("../Models/OrderModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const Product = require("../Models/ProductModel");
-
+const mongoose = require("mongoose");
 exports.CreateOrder = async (req, res, next) => {
   try {
     const userId = req.body.userId;
@@ -112,4 +112,22 @@ const modifyProduct = async (pro) => {
   let product = await Product.findOne(pro.productId);
   pro.name = product.name;
   return pro;
+};
+
+
+exports.GetCustomerOrder = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    // console.log("userId:", userId);
+    const orders = await Order.find({ userId: userId });
+    console.log("orders:", orders);
+    res.status(200).json({
+      status: "success",
+      data: {
+        data: orders,
+      },
+    });
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
 };
