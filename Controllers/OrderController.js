@@ -81,7 +81,7 @@ exports.ManageOrder = async (req, res, next) => {
     }
     order.orderStatus = req.body.orderStatus;
     order.markModified("orderStatus");
-    await order.save({ validateBeforeSave: false });
+    order.save({ validateBeforeSave: false });
     res.status(200).json({
       status: "success",
       data: {
@@ -107,12 +107,6 @@ exports.GetSellerOrder = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
-
-// const modifyProduct = async (pro) => {
-//   let product = await Product.findOne(pro.productId);
-//   pro.name = product.name;
-//   return pro;
-// };
 
 exports.getOrder = factory.getOne(Order, "Order not found for the given ID");
 
