@@ -25,5 +25,5 @@ router
       authController.restrictTo("seller"),
       orderController.ManageOrder
     );
-
-module.exports = router;
+    router.get("/orders/user/:userId", orderController.GetCustomerOrder);
+    module.exports = router;
