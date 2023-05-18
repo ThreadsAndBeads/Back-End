@@ -4,13 +4,7 @@ const authController = require("./../Controllers/AuthController");
 const orderController = require("./../Controllers/OrderController");
 const router = express.Router();
 
-router
-  .route("/createOrder")
-  .post(
-    authController.protect,
-    authController.restrictTo("seller"),
-    orderController.CreateOrder
-  );
+router.route("/").post(authController.protect, orderController.CreateOrder);
 router
   .route("/:sellerId")
   .get(
@@ -25,5 +19,6 @@ router
       authController.restrictTo("seller"),
       orderController.ManageOrder
     );
-    router.get("/orders/user/:userId", orderController.GetCustomerOrder);
-    module.exports = router;
+router.route("/:id").get(orderController.getOrder);
+router.get("/orders/user/:userId", orderController.GetCustomerOrder);
+module.exports = router;
