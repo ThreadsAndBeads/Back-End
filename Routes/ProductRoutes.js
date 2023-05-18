@@ -20,7 +20,7 @@ router.get("/search", productController.search);
 router.get("/categories", productController.getAllCategories);
 router
   .route("/discountedproducts")
-  .get(authController.protect, productController.getHighestDiscountedProducts);
+  .get(productController.getHighestDiscountedProducts);
 
 router
   .route("/:id")

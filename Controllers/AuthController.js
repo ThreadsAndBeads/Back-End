@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const emailController = require("./EmailController");
 const sendEmail = require("./../utils/email");
+const sendVerificationEmail = require("../utils/verificationEmail");
 const AppError = require("./../utils/appError");
 const FacebookStrategy = require("passport-facebook").Strategy;
 
@@ -68,7 +69,7 @@ module.exports.signup_post = async (req, res, next) => {
     });
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    emailController.sendVerificationEmail(name, email);
+    sendVerificationEmail(name, email);
     res.status(201).json({
       status: "success",
       data: {
@@ -94,23 +95,18 @@ module.exports.verify_get = async (req, res, next) => {
     if (!user) {
       return next(new AppError("User not found", 404));
     }
-
     if (user.isEmailVerified) {
       return next(new AppError("Email already verified", 404));
     }
-
     user.isEmailVerified = true;
     user.verificationToken = undefined;
     await user.save();
-    res.status(200).json({
-      status: "success",
-      message: "Email verified",
-    });
+    const redirectUrl = "http://localhost:4200/welcome"; // Replace with the URL of your front-end page
+    res.redirect(redirectUrl);
   } catch (err) {
-    res.status(500).json({
-      status: "error",
-      message: err.message,
-    });
+    // Handle any errors that occur during email verification
+    console.error(err);
+    res.status(500).send("An error occurred while verifying your email.");
   }
 };
 

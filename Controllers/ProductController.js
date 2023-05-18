@@ -9,7 +9,6 @@ const express = require("express");
 const fs = require("fs/promises");
 const app = express();
 const APIFeatures = require("./../utils/apiFeatures");
-
 require("dotenv").config();
 const { storage } = require("../storage/storage");
 const upload = multer({ storage });
@@ -53,7 +52,6 @@ exports.getAllProducts = async (req, res, next) => {
   } catch (error) {
     return next(new AppError(error.message));
   }
-
 };
 
 exports.getProduct = factory.getOne(
@@ -114,7 +112,6 @@ exports.search = async (req, res, next) => {
     const workshops = await Workshop.find({
       $or: [{ title: { $regex: req.query.q, $options: "i" } }],
     });
-
     results = {
       products,
       workshops,

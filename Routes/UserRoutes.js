@@ -29,6 +29,9 @@ router
 router
   .route("/:id")
   .get(authController.protect, UserController.getUserById)
-  .patch(authController.protect, UserController.updateUser);
+  .patch(authController.protect,
+    UserController.uploadUserImage,
+    UserController.resizeUserImage,
+    UserController.updateUser);
 
 module.exports = router;

@@ -2,6 +2,8 @@ const Workshop = require("../Models/WorkshopModel");
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
+const APIFeatures = require("./../utils/apiFeatures");
+
 const multer = require("multer");
 require("dotenv").config();
 const { storage } = require("../storage/storage");
@@ -33,20 +35,23 @@ exports.saveSellerData = async (req, res, next) => {
 };
 exports.showAllWorkshops = async (req, res, next) => {
   try {
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 5;
-    const skip = (page - 1) * limit;
-    const workshops = await Workshop.find().skip(skip).limit(limit);
-    const count = await Workshop.countDocuments();
+    let filter = {};
+    const features = new APIFeatures(Workshop.find(filter), req.query)
+      .filter()
+      .limitFields()
+      .paginate();
 
-    res.status(200).json({
+    const totalRecords = await Workshop.countDocuments();
+    const workshops = await features.query;
+
+    res.status(201).json({
       status: "success",
       data: {
         workshops: workshops,
-        totalRecords: count,
+        totalRecords: totalRecords,
       },
     });
-  } catch (err) {
-    return next(new AppError(err.message));
+  } catch (error) {
+    return next(new AppError(error.message));
   }
 };

@@ -18,11 +18,20 @@ let transporter = nodemailer.createTransport({
 
 const sendVerificationEmail = async (name, email, userId) => {
   const verificationToken = Math.random().toString(36).substr(2);
-  let mailOptions = {
+  const mailOptions = {
     from: "Threads-and-Beads@gmail.com",
     to: email,
-    subject: "Threads and Beads Email Verification",
-    html: `<p>Hi ${name},</p><p>Please click the following link to verify your email:</p><a href="http://localhost:7000/api/v1/users/verify?token=${verificationToken}">http://localhost:7000/api/v1/users/verify?token=${verificationToken}</a>`,
+    subject: `${name}, please verify your email for Threads and Beads`,
+    html: `
+      <p>Hi ${name},</p>
+      <p>Thank you for creating an account with Threads and Beads! To get started, please click the following link to verify your email:</p>
+      <a href="http://localhost:7000/api/v1/users/verify?token=${verificationToken}" style="text-decoration:none; color:#008CBA; font-weight:bold;">Verify your email</a>
+      <p>Once you've verified your email, you'll be able to access your account and start shopping at Threads and Beads.</p>
+      <br>
+      <p>If you have any questions or concerns, please don't hesitate to contact us at:</p>
+      <p>Threads and Beads Customer Support</p>
+      <p>Email: support@threadsandbeads.com</p>
+    `,
   };
   const user = await User.findOneAndUpdate(
     { email: email },
@@ -42,6 +51,7 @@ const sendVerificationEmail = async (name, email, userId) => {
   });
 };
 
-module.exports = {
-  sendVerificationEmail,
-};
+// module.exports = {
+//   sendVerificationEmail,
+// };
+module.exports = sendVerificationEmail;
