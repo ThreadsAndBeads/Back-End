@@ -6,6 +6,11 @@ const orderSchema = new mongoose.Schema({
     ref: "Users",
     required: true,
   },
+  sellerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    // ref: "Users",
+    required: true,
+  },
   products: [
     {
       productId: {
@@ -26,12 +31,38 @@ const orderSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ["pending", "processing", "shipped", "delivered"],
+    enum: ["pending", "shipped", "delivered", "cancelled"],
     default: "pending",
   },
   orderDate: {
     type: Date,
     default: Date.now,
+  },
+  clientAddress: {
+    apartmentNo: {
+      type: String,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  client_name: {
+    type: String,
+    required: true,
+  },
+  payment_method: {
+    type: String,
+    enum: ["cash", "credit"],
+    default: "cash",
   },
 });
 

@@ -34,9 +34,10 @@ exports.getAllProducts = async (req, res, next) => {
   try {
     let filter = {};
     const features = new APIFeatures(Product.find(filter), req.query)
-      .filter()
-      .limitFields()
-      .paginate();
+        .filter()
+        .sort()
+        .limitFields()
+        .paginate();
 
     const totalRecords = await Product.countDocuments();
     const products = await features.query;
