@@ -113,7 +113,6 @@ exports.getOrder = factory.getOne(Order, "Order not found for the given ID");
 exports.GetCustomerOrder = async (req, res, next) => {
   try {
     const userId = req.params.userId;
-    // console.log("userId:", userId);
     const orders = await Order.find({ userId: userId });
     console.log("orders:", orders);
     res.status(200).json({

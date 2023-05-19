@@ -18,7 +18,8 @@ router
       authController.protect,
       authController.restrictTo("seller"),
       orderController.ManageOrder
-    );
+  );
+  router.get("/customer/:userId", orderController.GetCustomerOrder);
 router.route("/:id").get(orderController.getOrder);
-router.get("/orders/user/:userId", orderController.GetCustomerOrder);
+
 module.exports = router;
