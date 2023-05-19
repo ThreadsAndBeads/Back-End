@@ -17,6 +17,7 @@
     "passport-facebook": "^3.0.0",
     "passport-google-oauth2": "^0.2.0",
     "sharp": "^0.32.1",
+    "socket.io": "^4.6.1",
     "validator": "^13.9.0"
   }
 }

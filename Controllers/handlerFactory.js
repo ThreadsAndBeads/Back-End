@@ -17,11 +17,12 @@ exports.deleteOne = (Model, errorMsg) => async (req, res, next) => {
 
 exports.updateOne = (Model, errorMsg) => async (req, res, next) => {
   try {
+    console.log(req.body);
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    console.log(doc);
+    // console.log(doc);
     if (doc) {
       res.status(200).json({
         status: "success",

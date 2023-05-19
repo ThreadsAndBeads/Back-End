@@ -12,10 +12,6 @@ const workshopSchema = new mongoose.Schema({
     type: String,
     required: [true, "Workshop must have a title"],
   },
-  category: {
-    type: String,
-    required: [true, "Workshop must have a category"],
-  },
   price: {
     type: Number,
     required: [true, "Workshop must have a price"],

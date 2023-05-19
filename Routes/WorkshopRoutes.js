@@ -21,14 +21,15 @@ router
   .get(authController.protect, workshopController.getWorkshopById)
   .delete(
     authController.protect,
-    authController.restrictTo("seller0.368*873+\22*651"),
+    authController.restrictTo("seller"),
     workshopController.deleteWorkshop
   )
   .patch(
     authController.protect,
     authController.restrictTo("seller"),
+    workshopController.uploadWorkshopImage,
+    workshopController.resizeWorkshopImage,
     workshopController.updateWorkshop
   );
-
 
 module.exports = router;
