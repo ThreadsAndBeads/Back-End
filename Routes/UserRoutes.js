@@ -25,13 +25,15 @@ router.patch("/resetPassword/:token", authController.resetPassword);
 router
   .route("/sellers")
   .get(authController.protect, UserController.getAllSellers);
-
+router.get("/top-sellers", UserController.getTopSellers);
 router
   .route("/:id")
   .get(authController.protect, UserController.getUserById)
-  .patch(authController.protect,
+  .patch(
+    authController.protect,
     UserController.uploadUserImage,
     UserController.resizeUserImage,
-    UserController.updateUser);
+    UserController.updateUser
+  );
 
 module.exports = router;
