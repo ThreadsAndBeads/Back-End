@@ -1,11 +1,12 @@
 const Cart = require("../Models/CartModel");
 const User = require("../Models/UserModel");
-
+const Sale = require("../Models/SaleModel");
 const Order = require("../Models/OrderModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const Product = require("../Models/ProductModel");
 const mongoose = require("mongoose");
+
 exports.CreateOrder = async (req, res, next) => {
   try {
     const userId = req.body.userId;
@@ -26,11 +27,27 @@ exports.CreateOrder = async (req, res, next) => {
       productsBySeller[sellerId].push(product);
     });
 
-    // Create a new order for each seller
+    // Create a new order and sale for each seller
     const orders = [];
     for (const sellerId in productsBySeller) {
       const seller = await User.findById(sellerId);
+      if (!seller) {
+        return res.status(404).json({
+          status: "fail",
+          message: "Seller not found",
+       });
+      }
+
       const sellerProducts = productsBySeller[sellerId];
+      const productIds = sellerProducts.map((product) => product.productId._id);
+
+      const products = await Product.find({ _id: { $in: productIds } });
+      if (products.length !== productIds.length) {
+        return res.status(404).json({
+          status: "fail",
+          message: "One or more products not found",
+        });
+      }
 
       const totalPrice = sellerProducts.reduce(
         (total, product) => total + product.quantity * product.productId.price,
@@ -49,14 +66,26 @@ exports.CreateOrder = async (req, res, next) => {
         client_name: req.body.client_name,
         totalPrice,
       });
-      console.log(newOrder);
 
-      await newOrder.save();
+      const savedOrder = await newOrder.save();
+
+      // Create a new sale document for each product in the order
+      for (const product of sellerProducts) {
+        const productData = products.find((p) => p._id.equals(product.productId._id));
+        const sale = new Sale({
+          sellerId,
+          productId: product.productId._id,
+          quantity: product.quantity,
+          totalPrice: product.quantity * productData.price,
+          orderDate: new Date(),
+        });
+        await sale.save();
+      }
 
       // Add the order to the list of orders
       orders.push({
         seller,
-        order: newOrder,
+        order: savedOrder,
       });
     }
     cart.products = [];
@@ -64,7 +93,6 @@ exports.CreateOrder = async (req, res, next) => {
     res.status(201).json({
       status: "success",
       data: {
-        // Order: newOrder,
         orders,
       },
     });
@@ -72,6 +100,7 @@ exports.CreateOrder = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
+
 exports.ManageOrder = async (req, res, next) => {
   try {
     const orderId = req.body.orderId;

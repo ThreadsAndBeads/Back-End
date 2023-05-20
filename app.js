@@ -16,8 +16,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const session = require("express-session");
 dotenv.config({ path: "./config.env" });
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json());
@@ -25,7 +24,7 @@ require("./utils/facebook");
 require("./utils/googlesignup");
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
-
+const DB = process.env.DATABASE;
 mongoose
   .connect(DB_URL, { useNewUrlParser: true })
   .then((res) => {
