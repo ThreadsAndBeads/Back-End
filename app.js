@@ -16,8 +16,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const session = require("express-session");
 dotenv.config({ path: "./config.env" });
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json());
@@ -25,16 +24,17 @@ require("./utils/facebook");
 require("./utils/googlesignup");
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
-
+const DB = process.env.DATABASE;
 mongoose
-  .connect(DB_URL, { useNewUrlParser: true })
-  .then((res) => {
-    console.log("Database connected successfully");
+  .connect(DB_URL, {
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.log("DB connection successful");
   })
   .catch((err) => {
     console.error("Connection error:", err);
   });
-
 // signup with facebook
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
