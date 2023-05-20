@@ -26,7 +26,7 @@ const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
 const DB = process.env.DATABASE;
 mongoose
-  .connect(DB_URL, { useNewUrlParser: true })
+  .connect(DB, { useNewUrlParser: true })
   .then((res) => {
     console.log("Database connected successfully");
   })
