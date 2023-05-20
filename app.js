@@ -21,12 +21,12 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 app.use(cors());
 app.use(express.json());
 require("./utils/facebook");
-require("./utils/googlesignup");
+// require("./utils/googlesignup");
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
 const DB = process.env.DATABASE;
 mongoose
-  .connect(DB_URL, {
+  .connect(DB, {
     useNewUrlParser: true,
   })
   .then(() => {
