@@ -10,7 +10,6 @@ exports.CreateOrder = async (req, res, next) => {
   try {
     const userId = req.body.userId;
     const cart = await Cart.findOne({ userId }).populate("products.productId");
-
     if (!cart || !cart.products.length) {
       return res.status(404).json({
         status: "fail",
@@ -18,51 +17,47 @@ exports.CreateOrder = async (req, res, next) => {
       });
     }
 
-    const productsBySeller = groupProductsBySeller(cart);
+    const productsBySeller = {};
+    cart.products.forEach((product) => {
+      const sellerId = product.productId.user_id.toString();
+      if (!productsBySeller[sellerId]) {
+        productsBySeller[sellerId] = [];
+      }
+      productsBySeller[sellerId].push(product);
+    });
 
+    // Create a new order for each seller
     const orders = [];
     for (const sellerId in productsBySeller) {
-      const { seller, socketId } = await getSellerById(sellerId);
-      if (!seller) {
-        return res.status(404).json({
-          status: "fail",
-          message: "Seller not found",
-        });
-      }
-
+      const seller = await User.findById(sellerId);
       const sellerProducts = productsBySeller[sellerId];
-      const products = await getProductsByIds(
-        getProductIdsFromSellerProducts(sellerProducts)
+
+      const totalPrice = sellerProducts.reduce(
+        (total, product) => total + product.quantity * product.productId.price,
+        0
       );
 
-      if (products.length !== sellerProducts.length) {
-        return res.status(404).json({
-          status: "fail",
-          message: "One or more products notfound",
-        });
-      }
-
-      const totalPrice = calculateTotalPrice(sellerProducts, products);
-
-      const savedOrder = await createOrder(
-        cart.userId,
+      const newOrder = new Order({
+        userId: cart.userId,
         sellerId,
-        sellerProducts,
+        products: sellerProducts,
+        orderDate: new Date(),
+        orderStatus: "pending",
+        clientAddress: req.body.clientAddress,
+        payment_method: req.body.payment_method,
+        phone: req.body.phone,
+        client_name: req.body.client_name,
         totalPrice,
-        req.body.clientAddress,
-        req.body.payment_method,
-        req.body.phone,
-        req.body.client_name
-      );
+      });
+      await newOrder.save();
       sendNotification(sellerId);
       orders.push({
         seller,
-        order: savedOrder,
+        order: newOrder,
       });
     }
-
-    await clearCart(cart);
-
+    cart.products = [];
+    await cart.save();
     res.status(201).json({
       status: "success",
       data: {
@@ -74,21 +69,10 @@ exports.CreateOrder = async (req, res, next) => {
   }
 };
 
-const groupProductsBySeller = (cart) => {
-  const productsBySeller = {};
-  cart.products.forEach((product) => {
-    const sellerId = product.productId.user_id.toString();
-    if (!productsBySeller[sellerId]) {
-      productsBySeller[sellerId] = [];
-    }
-    productsBySeller[sellerId].push(product);
-  });
-  return productsBySeller;
-};
-
 const sendNotification = (sellerId) => {
   const socket = socketModule.getSocket();
   const room = `seller_${sellerId}`;
+  console.log(room);
   let sellerSocket;
   const sellerSockets = socket.sockets.adapter.rooms.get(room);
   if (sellerSockets && sellerSockets.size === 1) {
@@ -97,68 +81,11 @@ const sendNotification = (sellerId) => {
   }
 
   if (sellerSocket) {
-    sellerSocket.emit("notification", { data: "Hello seller!" });
+    sellerSocket.emit("notification", { data: "You Have A New Order" });
     console.log("Notification sent to the seller.");
   } else {
     console.log("Seller socket not found in the room.");
   }
-};
-const getSellerById = async (sellerId) => {
-  const seller = await User.findById(sellerId);
-  if (seller) {
-    return {
-      seller,
-      socketId: seller.socketId, // add the socketId property
-    };
-  }
-  return null;
-};
-
-const getProductIdsFromSellerProducts = (sellerProducts) => {
-  return sellerProducts.map((product) => product.productId._id);
-};
-
-const getProductsByIds = async (productIds) => {
-  return await Product.find({ _id: { $in: productIds } });
-};
-
-const calculateTotalPrice = (sellerProducts, products) => {
-  return sellerProducts.reduce((total, product) => {
-    const productData = products.find((p) =>
-      p._id.equals(product.productId._id)
-    );
-    return total + product.quantity * productData.price;
-  }, 0);
-};
-
-const createOrder = async (
-  userId,
-  sellerId,
-  sellerProducts,
-  totalPrice,
-  clientAddress,
-  paymentMethod,
-  phone,
-  clientName
-) => {
-  const newOrder = new Order({
-    userId,
-    sellerId,
-    products: sellerProducts,
-    orderDate: new Date(),
-    orderStatus: "pending",
-    clientAddress,
-    payment_method: paymentMethod,
-    phone,
-    client_name: clientName,
-    totalPrice,
-  });
-  return await newOrder.save();
-};
-
-const clearCart = async (cart) => {
-  cart.products = [];
-  await cart.save();
 };
 
 exports.ManageOrder = async (req, res, next) => {
