@@ -35,5 +35,5 @@ router
     UserController.resizeUserImage,
     UserController.updateUser
   );
-
+router.route("/revenue/:id").get(UserController.getSellerStatistics);
 module.exports = router;
