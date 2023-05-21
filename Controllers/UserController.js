@@ -1,7 +1,7 @@
 //user controller
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
-const Sale = require("../Models/SaleModel");
+const Order = require("../Models/OrderModel");
 
 const factory = require("./handlerFactory");
 const multer = require("multer");
@@ -51,18 +51,13 @@ exports.getAllSellers = async (req, res, next) => {
 };
 exports.getTopSellers = async (req, res, next) => {
   try {
-    const topSellers = await Sale.aggregate([
+    const result = await Order.aggregate([
       {
         $group: {
           _id: "$sellerId",
+          totalOrders: { $sum: 1 },
           totalRevenue: { $sum: "$totalPrice" },
         },
-      },
-      {
-        $sort: { totalRevenue: -1 },
-      },
-      {
-        $limit: 3,
       },
       {
         $lookup: {
@@ -76,6 +71,15 @@ exports.getTopSellers = async (req, res, next) => {
         $unwind: "$seller",
       },
       {
+        $project: {
+          _id: 1,
+          totalOrders: 1,
+          sellerName: "$seller.name",
+          sellerImage: "$seller.image",
+          totalRevenue: 1,
+        },
+      },
+      {
         $lookup: {
           from: "products",
           localField: "_id",
@@ -83,30 +87,26 @@ exports.getTopSellers = async (req, res, next) => {
           as: "sellerProducts",
         },
       },
-      // {
-      //   $lookup: {
-      //     from: "images",
-      //     localField: "_id",
-      //     foreignField: "sellerId",
-      //     as: "sellerImage",
-      //   },
-      // },
       {
         $project: {
-          _id: 0,
-          sellerId: "$_id",
-          sellerName: "$seller.name",
-          totalRevenue: 1,
+          _id: 1,
+          totalOrders: 1,
+          sellerName: 1,
           sellerProductsCount: { $size: "$sellerProducts" },
-          sellerImage: "$seller.image",
+          sellerImage: 1,
         },
       },
+      {
+        $sort: { totalOrders: -1 },
+      },
+      {
+        $limit: 3,
+      },
     ]);
-
     res.status(200).json({
       status: "success",
       data: {
-        topSellers,
+        result,
       },
     });
   } catch (error) {
