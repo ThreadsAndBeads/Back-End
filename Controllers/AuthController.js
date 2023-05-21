@@ -1,16 +1,16 @@
 const User = require("../Models/UserModel");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-
-const GoogleStrategy = require("passport-google-oauth2").Strategy;
+// const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const { promisify } = require("util");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-const emailController = require("./EmailController");
+// const emailController = require("./EmailController");
 const sendEmail = require("./../utils/email");
+const sendVerificationEmail = require("../utils/verificationEmail");
 const AppError = require("./../utils/appError");
-const FacebookStrategy = require("passport-facebook").Strategy;
+// const FacebookStrategy = require("passport-facebook").Strategy;
 
 //Handling Error Messages
 const handleErrors = (err) => {
@@ -68,7 +68,7 @@ module.exports.signup_post = async (req, res, next) => {
     });
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    emailController.sendVerificationEmail(name, email);
+    sendVerificationEmail(name, email);
     res.status(201).json({
       status: "success",
       data: {
@@ -94,23 +94,18 @@ module.exports.verify_get = async (req, res, next) => {
     if (!user) {
       return next(new AppError("User not found", 404));
     }
-
     if (user.isEmailVerified) {
       return next(new AppError("Email already verified", 404));
     }
-
     user.isEmailVerified = true;
     user.verificationToken = undefined;
     await user.save();
-    res.status(200).json({
-      status: "success",
-      message: "Email verified",
-    });
+    const redirectUrl = "http://localhost:4200/welcome"; // Replace with the URL of your front-end page
+    res.redirect(redirectUrl);
   } catch (err) {
-    res.status(500).json({
-      status: "error",
-      message: err.message,
-    });
+    // Handle any errors that occur during email verification
+    console.error(err);
+    res.status(500).send("An error occurred while verifying your email.");
   }
 };
 
@@ -279,7 +274,13 @@ exports.forgotPassword = async (req, res, next) => {
     )}/api/v1/users/resetPassword/${resetToken}`;
 
     const reset = `http://localhost:4200/response-reset-password/${resetToken}`;
-    const html = `<p>Hi ${user.email},</p><p>Please click the following link to reset your password:</p><a href="${reset}">Reset password</a>`;
+    const html = `<div style="max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; background-color: #fff; border-radius: 5px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+    <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">Reset Your Password</h1>
+    <p style="margin-bottom: 16px;">Hi ${user.email},</p>
+    <p style="margin-bottom: 16px;">We received a request to reset your password. To proceed, please click the following link:</p>
+    <p style="margin-bottom: 16px;"><a href="${reset}" style="display: inline-block; background-color: #008CBA; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;font-weight: bold; letter-spacing: 1px;">Reset Password</a></p>
+    <p style="margin-top: 20px;">If you did not request a password reset, please ignore this email.</p> <p style="margin-top: 20px;">Thank you,</p> <p style="margin-top: 20px; font-family=Delicious Handrawn">The Threads and Beads Team</p> </div>
+    `;
     try {
       await sendEmail({
         email: user.email,

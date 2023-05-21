@@ -3,28 +3,36 @@ const productSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "product must have a user id "],
+    ref: "Users",
   },
   name: {
     type: String,
     required: [true, "product must have a name"],
   },
-  //  category: {
+  // category: {
   //     type: String,
   //     required: [true, "product must have a category"],
-  //   },
+  // },
   price: {
     type: Number,
     required: [true, "product must have a price"],
+  },
+  inStock: {
+    type: Number,
+    // required: [true, "product must have in stock quantity"],
   },
   priceDiscount: {
     type: Number,
     validate: {
       validator: function (val) {
-        return val < this.price;
+        console.log(val, this.get('price'));
+        return val < this.get('price');
       },
       message: "discount price should be below regular price",
     },
   },
+  
+  
   description: {
     type: String,
     trim: true,

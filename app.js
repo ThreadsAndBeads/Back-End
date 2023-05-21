@@ -4,6 +4,7 @@ const productRoutes = require("./Routes/ProductRoutes");
 const cartRoutes = require("./Routes/CartRoutes");
 const workshopRoutes = require("./Routes/WorkshopRoutes");
 const orderRoutes = require("./Routes/OrderRoutes");
+const paymentRoutes = require("./Routes/PaymentRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
 const AppError = require("./utils/appError");
 const { storage } = require("./storage/storage");
@@ -15,23 +16,25 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const session = require("express-session");
 dotenv.config({ path: "./config.env" });
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors());
 app.use(express.json());
 require("./utils/facebook");
-require("./utils/googlesignup");
+// require("./utils/googlesignup");
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
-
+const DB = process.env.DATABASE;
 mongoose
-  .connect(DB_URL, { useNewUrlParser: true })
-  .then((res) => {
-    console.log("Database connected successfully");
+  .connect(DB, {
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.log("DB connection successful");
   })
   .catch((err) => {
     console.error("Connection error:", err);
   });
-
 // signup with facebook
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -56,7 +59,8 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/workshops", workshopRoutes);
-app.use("/api/v1/order", orderRoutes);
+app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/payments", paymentRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl}`, 404));
