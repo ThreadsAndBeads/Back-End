@@ -54,7 +54,7 @@ exports.CreateOrder = async (req, res, next) => {
         req.body.phone,
         req.body.client_name
       );
-      this.sendNotification(sellerId);
+      sendNotification(sellerId);
       orders.push({
         seller,
         order: savedOrder,
@@ -231,7 +231,8 @@ exports.cancelOrder = async function (req, res, next) {
     if (order.orderStatus === "shipped" || order.orderStatus === "delivered") {
       res.status(400).json({
         status: "fail",
-        message: "Order has already been shipped/delivered and cannot be cancelled.",
+        message:
+          "Order has already been shipped/delivered and cannot be cancelled.",
       });
     } else {
       await Order.findByIdAndDelete(orderId);
