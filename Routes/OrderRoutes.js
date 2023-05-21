@@ -19,7 +19,11 @@ router
       authController.restrictTo("seller"),
       orderController.ManageOrder
   );
-  router.get("/client/:userId", orderController.GetCustomerOrder);
-router.route("/:id").get(orderController.getOrder);
+router
+  .get("/client/:userId", orderController.GetCustomerOrder);
+router
+  .route("/:id").get(orderController.getOrder);
+router
+  .route("/cancelOrder/:id").delete(orderController.cancelOrder);
 
 module.exports = router;
