@@ -1,5 +1,6 @@
 //user controller
 const User = require("../Models/UserModel");
+const Order = require("../Models/OrderModel");
 const AppError = require("./../utils/appError");
 const Sale = require("../Models/SaleModel");
 
@@ -109,6 +110,22 @@ exports.getTopSellers = async (req, res, next) => {
         topSellers,
       },
     });
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+};
+exports.getSellerStatistics = async (req, res, next) => {
+  try {
+    const orders = await Order.find({ sellerId: req.params.id });
+    let totalRevenue = 0;
+    let totalOrders = orders.length;
+    if (orders) {
+      orders.forEach((order) => {
+        const sellerRevenue = order.totalPrice;
+        totalRevenue += sellerRevenue;
+      });
+    }
+    res.status(200).json({ totalRevenue, totalOrders });
   } catch (error) {
     return next(new AppError(error.message));
   }
