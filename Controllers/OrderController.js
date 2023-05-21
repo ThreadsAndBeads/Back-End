@@ -154,3 +154,34 @@ exports.GetCustomerOrder = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
+
+exports.cancelOrder = async function (req, res, next) {
+  try {
+    const orderId = req.params.id;
+    let order = await Order.findById(orderId);
+
+    if (!order) {
+      res.status(404).json({
+        status: "fail",
+        message: "Order not found.",
+      });
+      return;
+    }
+
+    if (order.orderStatus === "shipped" || order.orderStatus === "delivered") {
+      res.status(400).json({
+        status: "fail",
+        message: "Order has already been shipped/delivered and cannot be cancelled.",
+      });
+    } else {
+      await Order.findByIdAndDelete(orderId);
+
+      res.status(200).json({
+        status: "success",
+        message: "Order has been cancelled and deleted.",
+      });
+    }
+  } catch (error) {
+    return next(new AppError(error.message));
+  }
+};
