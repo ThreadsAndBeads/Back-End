@@ -2,7 +2,6 @@
 const User = require("../Models/UserModel");
 const Order = require("../Models/OrderModel");
 const AppError = require("./../utils/appError");
-const Order = require("../Models/OrderModel");
 
 const factory = require("./handlerFactory");
 const multer = require("multer");
