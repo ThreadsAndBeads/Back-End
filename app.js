@@ -4,6 +4,7 @@ const productRoutes = require("./Routes/ProductRoutes");
 const cartRoutes = require("./Routes/CartRoutes");
 const workshopRoutes = require("./Routes/WorkshopRoutes");
 const orderRoutes = require("./Routes/OrderRoutes");
+const favouriteRoutes = require("./Routes/FavouriteRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
 const AppError = require("./utils/appError");
 const { storage } = require("./storage/storage");
@@ -57,6 +58,7 @@ app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/workshops", workshopRoutes);
 app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/favourites", favouriteRoutes);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl}`, 404));
