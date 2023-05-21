@@ -23,7 +23,7 @@ app.use(express.json());
 require("./utils/facebook");
 // require("./utils/googlesignup");
 const mongoose = require("mongoose");
-const DB_URL = process.env.DATABASE_URL;
+// const DB_URL = process.env.DATABASE_URL;
 const DB = process.env.DATABASE;
 mongoose
   .connect(DB, {
