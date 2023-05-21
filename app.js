@@ -5,6 +5,7 @@ const cartRoutes = require("./Routes/CartRoutes");
 const workshopRoutes = require("./Routes/WorkshopRoutes");
 const orderRoutes = require("./Routes/OrderRoutes");
 const favouriteRoutes = require("./Routes/FavouriteRoutes");
+const paymentRoutes = require("./Routes/PaymentRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
 const AppError = require("./utils/appError");
 const { storage } = require("./storage/storage");
@@ -16,24 +17,32 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const session = require("express-session");
 dotenv.config({ path: "./config.env" });
+const http = require("http");
+const socketModule = require("./socket");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-app.use(cors());
+// app.use(cors());
 app.use(express.json());
 require("./utils/facebook");
-require("./utils/googlesignup");
 const mongoose = require("mongoose");
 const DB_URL = process.env.DATABASE_URL;
-
+const DB = process.env.DATABASE;
 mongoose
-  .connect(DB_URL, { useNewUrlParser: true })
-  .then((res) => {
-    console.log("Database connected successfully");
+  .connect(DB, {
+    useNewUrlParser: true,
+  })
+  .then(() => {
+    console.log("DB connection successful");
   })
   .catch((err) => {
     console.error("Connection error:", err);
   });
 
-// signup with facebook
+const server = http.createServer(app);
+
+
+socketModule.init(server);
+app.use(cors({ origin: "*" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
@@ -43,28 +52,29 @@ app.use(
     saveUninitialized: false,
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept"
+//   );
+//   next();
+// });
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);
 app.use("/api/v1/workshops", workshopRoutes);
 app.use("/api/v1/orders", orderRoutes);
 app.use("/api/v1/favourites", favouriteRoutes);
-
+app.use("/api/v1/payments", paymentRoutes);
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl}`, 404));
 });
-app.use(globalErrorHandler);
 
-app.listen(process.env.PORT, () => {
+app.use(globalErrorHandler);
+server.listen(process.env.PORT, () => {
   console.log("http://localhost:" + process.env.PORT);
 });

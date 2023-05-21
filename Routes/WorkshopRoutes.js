@@ -21,7 +21,7 @@ router
   .get(authController.protect, workshopController.getWorkshopById)
   .delete(
     authController.protect,
-    authController.restrictTo("seller0.368*873+\22*651"),
+    authController.restrictTo("seller"),
     workshopController.deleteWorkshop
   )
   .patch(
@@ -29,6 +29,5 @@ router
     authController.restrictTo("seller"),
     workshopController.updateWorkshop
   );
-
 
 module.exports = router;

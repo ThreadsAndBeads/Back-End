@@ -32,16 +32,19 @@ exports.createProduct = factory.createOne(Product);
 
 exports.getAllProducts = async (req, res, next) => {
   try {
+
+
     let filter = {};
     const features = new APIFeatures(Product.find(filter), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
     const totalRecords = await Product.countDocuments();
     const products = await features.query;
-
+    // socket.emit("notification", "notify"); // Updates Live Notification
+    // res.send(notify);
     res.status(201).json({
       status: "success",
       data: {

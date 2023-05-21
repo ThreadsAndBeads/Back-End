@@ -3,12 +3,10 @@ const nodemailer = require("nodemailer");
 const sendEmail = async (options) => {
   // Create a transporter
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    secureConnection: false,
+    service: "gmail",
     auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.GMAIL,
+      pass: process.env.APP_PASSWORD,
     },
     tls: {
       ciphers: "SSLv3",
@@ -17,7 +15,7 @@ const sendEmail = async (options) => {
 
   //email options
   const mailOptions = {
-    from: "Threads And Beads  <marim.khaled99@gmail.gom>",
+    from: "Threads-and-Beads@gmail.com",
     to: options.email,
     subject: options.subject,
     text: options.message,
