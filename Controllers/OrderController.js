@@ -11,6 +11,7 @@ exports.CreateOrder = async (req, res, next) => {
   try {
     const userId = req.body.userId;
     const cart = await Cart.findOne({ userId }).populate("products.productId");
+
     if (!cart || !cart.products.length) {
       return res.status(404).json({
         status: "fail",
@@ -18,27 +19,33 @@ exports.CreateOrder = async (req, res, next) => {
       });
     }
 
-    const productsBySeller = {};
-    cart.products.forEach((product) => {
-      const sellerId = product.productId.user_id.toString();
-      if (!productsBySeller[sellerId]) {
-        productsBySeller[sellerId] = [];
-      }
-      productsBySeller[sellerId].push(product);
-    });
+    const productsBySeller = groupProductsBySeller(cart);
 
-    // Create a new order for each seller
     const orders = [];
     for (const sellerId in productsBySeller) {
-      const seller = await User.findById(sellerId);
-      const sellerProducts = productsBySeller[sellerId];
+      const { seller, socketId } = await getSellerById(sellerId);
+      if (!seller) {
+        return res.status(404).json({
+          status: "fail",
+          message: "Seller not found",
+        });
+      }
 
-      const totalPrice = sellerProducts.reduce(
-        (total, product) => total + product.quantity * product.productId.price,
-        0
+      const sellerProducts = productsBySeller[sellerId];
+      const products = await getProductsByIds(
+        getProductIdsFromSellerProducts(sellerProducts)
       );
+
+      if (products.length !== sellerProducts.length) {
+        return res.status(404).json({
+          status: "fail",
+          message: "One or more products notfound",
+        });
+      }
+      const totalPrice = calculateTotalPrice(sellerProducts, products);
+      const discount = req.body.discount || 0;
+      const is_gift = req.body.is_gift || false;
       const productsWithDetails = sellerProducts.map((product) => {
-        console.log(product);
         return {
           product: {
             name: product.productId.name,
@@ -48,27 +55,27 @@ exports.CreateOrder = async (req, res, next) => {
           quantity: product.quantity,
         };
       });
-      const newOrder = new Order({
-        userId: cart.userId,
+      const savedOrder = await createOrder(
+        cart.userId,
         sellerId,
-        products: productsWithDetails,
-        orderDate: new Date(),
-        orderStatus: "pending",
-        clientAddress: req.body.clientAddress,
-        payment_method: req.body.payment_method,
-        phone: req.body.phone,
-        client_name: req.body.client_name,
+        productsWithDetails,
         totalPrice,
-      });
-      await newOrder.save();
+        req.body.clientAddress,
+        req.body.payment_method,
+        req.body.phone,
+        req.body.client_name,
+        discount,
+        is_gift
+      );
       sendNotification(sellerId);
       orders.push({
         seller,
-        order: newOrder,
+        order: savedOrder,
       });
     }
-    cart.products = [];
-    await cart.save();
+
+    await clearCart(cart);
+
     res.status(201).json({
       status: "success",
       data: {
@@ -78,6 +85,18 @@ exports.CreateOrder = async (req, res, next) => {
   } catch (error) {
     return next(new AppError(error.message));
   }
+};
+
+const groupProductsBySeller = (cart) => {
+  const productsBySeller = {};
+  cart.products.forEach((product) => {
+    const sellerId = product.productId.user_id.toString();
+    if (!productsBySeller[sellerId]) {
+      productsBySeller[sellerId] = [];
+    }
+    productsBySeller[sellerId].push(product);
+  });
+  return productsBySeller;
 };
 
 const sendNotification = (sellerId) => {
@@ -109,6 +128,68 @@ const sendNotification = (sellerId) => {
     .catch((error) => {
       console.error("Failed to store notification:", error);
     });
+};
+
+const getSellerById = async (sellerId) => {
+  const seller = await User.findById(sellerId);
+  if (seller) {
+    return {
+      seller,
+      socketId: seller.socketId, // add the socketId property
+    };
+  }
+  return null;
+};
+
+const getProductIdsFromSellerProducts = (sellerProducts) => {
+  return sellerProducts.map((product) => product.productId._id);
+};
+
+const getProductsByIds = async (productIds) => {
+  return await Product.find({ _id: { $in: productIds } });
+};
+
+const calculateTotalPrice = (sellerProducts, products) => {
+  return sellerProducts.reduce((total, product) => {
+    const productData = products.find((p) =>
+      p._id.equals(product.productId._id)
+    );
+    return total + product.quantity * productData.price;
+  }, 0);
+};
+
+const createOrder = async (
+  userId,
+  sellerId,
+  sellerProducts,
+  totalPrice,
+  clientAddress,
+  paymentMethod,
+  phone,
+  clientName,
+  discount,
+  is_gift
+) => {
+  const newOrder = new Order({
+    userId,
+    sellerId,
+    products: sellerProducts,
+    orderDate: new Date(),
+    orderStatus: "pending",
+    clientAddress,
+    payment_method: paymentMethod,
+    phone,
+    client_name: clientName,
+    totalPrice,
+    discount,
+    is_gift,
+  });
+  return await newOrder.save();
+};
+
+const clearCart = async (cart) => {
+  cart.products = [];
+  await cart.save();
 };
 
 exports.ManageOrder = async (req, res, next) => {
