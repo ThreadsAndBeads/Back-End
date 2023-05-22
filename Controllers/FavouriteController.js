@@ -133,3 +133,22 @@ exports.getTotalFavourites = async (req, res, next) => {
         return next(new AppError(error.message));
     }
 }
+
+exports.isInFavourites = async (req, res, next) => {
+    try {
+        const productId = req.params.id;
+        const user = await User.findById(req.user._id);
+        const userFavoutites = await Favourite.findOne({
+            userId: user._id,
+        });
+        if (!userFavoutites) {
+            return res.status(200).json(false);
+        }
+        const isFavorite = userFavoutites.products.some(
+            (product) => product.product.toString() === productId
+        );
+        return res.status(200).json(isFavorite);
+    } catch (error) {
+        return next(new AppError(error.message));
+    }
+};
