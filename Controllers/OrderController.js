@@ -42,7 +42,9 @@ exports.CreateOrder = async (req, res, next) => {
         });
       }
 
-      const totalPrice = calculateTotalPrice(sellerProducts, products);
+      const totalPrice = calculateTotalPrice(sellerProducts, products) ;
+      const discount = req.body.discount || 0;
+      const is_gift = req.body.is_gift || false;
 
       const savedOrder = await createOrder(
         cart.userId,
@@ -52,7 +54,9 @@ exports.CreateOrder = async (req, res, next) => {
         req.body.clientAddress,
         req.body.payment_method,
         req.body.phone,
-        req.body.client_name
+        req.body.client_name,
+        discount,
+        is_gift
       );
       sendNotification(sellerId);
       orders.push({
@@ -139,7 +143,9 @@ const createOrder = async (
   clientAddress,
   paymentMethod,
   phone,
-  clientName
+  clientName,
+  discount,
+  is_gift
 ) => {
   const newOrder = new Order({
     userId,
@@ -152,6 +158,8 @@ const createOrder = async (
     phone,
     client_name: clientName,
     totalPrice,
+    discount,
+    is_gift
   });
   return await newOrder.save();
 };
