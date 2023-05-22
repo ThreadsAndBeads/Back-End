@@ -36,4 +36,5 @@ router
     UserController.updateUser
   );
 router.route("/revenue/:id").get(UserController.getSellerStatistics);
+router.route("/notification/:id").get(UserController.getSellerNotifications);
 module.exports = router;

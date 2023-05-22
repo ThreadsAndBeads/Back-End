@@ -5,6 +5,7 @@ const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const Product = require("../Models/ProductModel");
 const socketModule = require("../socket");
+const Notification = require("../Models/NotificationModel");
 
 exports.CreateOrder = async (req, res, next) => {
   try {
@@ -41,15 +42,23 @@ exports.CreateOrder = async (req, res, next) => {
           message: "One or more products notfound",
         });
       }
-
-      const totalPrice = calculateTotalPrice(sellerProducts, products) ;
+      const totalPrice = calculateTotalPrice(sellerProducts, products);
       const discount = req.body.discount || 0;
       const is_gift = req.body.is_gift || false;
-
+      const productsWithDetails = sellerProducts.map((product) => {
+        return {
+          product: {
+            name: product.productId.name,
+            image: product.productId.images[0],
+            id: product.productId._id,
+          },
+          quantity: product.quantity,
+        };
+      });
       const savedOrder = await createOrder(
         cart.userId,
         sellerId,
-        sellerProducts,
+        productsWithDetails,
         totalPrice,
         req.body.clientAddress,
         req.body.payment_method,
@@ -93,6 +102,7 @@ const groupProductsBySeller = (cart) => {
 const sendNotification = (sellerId) => {
   const socket = socketModule.getSocket();
   const room = `seller_${sellerId}`;
+  console.log(room);
   let sellerSocket;
   const sellerSockets = socket.sockets.adapter.rooms.get(room);
   if (sellerSockets && sellerSockets.size === 1) {
@@ -101,12 +111,25 @@ const sendNotification = (sellerId) => {
   }
 
   if (sellerSocket) {
-    sellerSocket.emit("notification", { data: "Hello seller!" });
+    sellerSocket.emit("notification", { data: "You Have A New Order" });
     console.log("Notification sent to the seller.");
   } else {
     console.log("Seller socket not found in the room.");
   }
+  const newNotification = new Notification({
+    sellerId: sellerId,
+    notificationDetails: "You Have A New Order",
+  });
+  newNotification
+    .save()
+    .then(() => {
+      console.log("Notification stored successfully.");
+    })
+    .catch((error) => {
+      console.error("Failed to store notification:", error);
+    });
 };
+
 const getSellerById = async (sellerId) => {
   const seller = await User.findById(sellerId);
   if (seller) {
@@ -159,7 +182,7 @@ const createOrder = async (
     client_name: clientName,
     totalPrice,
     discount,
-    is_gift
+    is_gift,
   });
   return await newOrder.save();
 };
