@@ -74,7 +74,6 @@ const userSchema = new mongoose.Schema({
 
 //fire function before user is saved to database
 userSchema.pre("save", async function (next) {
-    console.log("on preeeeeeeeee");
     if (this.isNew || this.isModified("password")) {
         const salt = await bcrypt.genSalt();
         this.password = await bcrypt.hash(this.password, salt);

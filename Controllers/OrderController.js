@@ -5,7 +5,10 @@ const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const Product = require("../Models/ProductModel");
 const socketModule = require("../socket");
-
+const Notification = require("../Models/NotificationModel");
+exports.prepareOrderData = async (req, res, next) => {
+  const user = await Product.findById(req.body.seller_id);
+};
 exports.CreateOrder = async (req, res, next) => {
   try {
     const userId = req.body.userId;
@@ -36,11 +39,21 @@ exports.CreateOrder = async (req, res, next) => {
         (total, product) => total + product.quantity * product.productId.price,
         0
       );
-
+      const productsWithDetails = sellerProducts.map((product) => {
+        console.log(product);
+        return {
+          product: {
+            name: product.productId.name,
+            image: product.productId.images[0],
+            id: product.productId._id,
+          },
+          quantity: product.quantity,
+        };
+      });
       const newOrder = new Order({
         userId: cart.userId,
         sellerId,
-        products: sellerProducts,
+        products: productsWithDetails,
         orderDate: new Date(),
         orderStatus: "pending",
         clientAddress: req.body.clientAddress,
@@ -86,6 +99,18 @@ const sendNotification = (sellerId) => {
   } else {
     console.log("Seller socket not found in the room.");
   }
+  const newNotification = new Notification({
+    sellerId: sellerId,
+    notificationDetails: "You Have A New Order",
+  });
+  newNotification
+    .save()
+    .then(() => {
+      console.log("Notification stored successfully.");
+    })
+    .catch((error) => {
+      console.error("Failed to store notification:", error);
+    });
 };
 
 exports.ManageOrder = async (req, res, next) => {
