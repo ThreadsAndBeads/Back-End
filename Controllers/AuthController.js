@@ -65,6 +65,8 @@ module.exports.signup_post = async (req, res, next) => {
       type,
       name,
       isEmailVerified: false,
+      image:
+        "https://res.cloudinary.com/dfxnrkmip/image/upload/v1684740882/149071_alyqv4.png",
     });
     const token = createToken(user._id);
     res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
