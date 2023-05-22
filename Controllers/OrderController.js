@@ -6,9 +6,7 @@ const factory = require("./handlerFactory");
 const Product = require("../Models/ProductModel");
 const socketModule = require("../socket");
 const Notification = require("../Models/NotificationModel");
-exports.prepareOrderData = async (req, res, next) => {
-  const user = await Product.findById(req.body.seller_id);
-};
+
 exports.CreateOrder = async (req, res, next) => {
   try {
     const userId = req.body.userId;
