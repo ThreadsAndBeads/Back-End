@@ -24,7 +24,7 @@ router.patch("/resetPassword/:token", authController.resetPassword);
 
 router
   .route("/sellers")
-  .get(authController.protect, UserController.getAllSellers);
+  .get(UserController.getAllSellers);
 router.get("/top-sellers", UserController.getTopSellers);
 router
   .route("/:id")

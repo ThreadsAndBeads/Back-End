@@ -8,7 +8,7 @@ const upload = multer({ storage });
 
 router
   .route("/")
-  .get(authController.protect, productController.getAllProducts)
+  .get(productController.getAllProducts)
   .post(
     authController.protect,
     authController.restrictTo("seller"),
