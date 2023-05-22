@@ -14,7 +14,7 @@ router
     workshopController.saveSellerData,
     workshopController.createWorkshop
   )
-  .get(authController.protect, workshopController.showAllWorkshops);
+  .get(workshopController.showAllWorkshops);
 
 router
   .route("/:id")
