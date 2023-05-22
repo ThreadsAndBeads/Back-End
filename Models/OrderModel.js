@@ -63,6 +63,14 @@ const orderSchema = new mongoose.Schema({
     enum: ["cash", "credit"],
     default: "cash",
   },
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  is_gift: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Order = mongoose.model("Order", orderSchema);

@@ -15,6 +15,7 @@ router
 
 router
     .route("/:id")
+    .get(authController.protect, FavouriteController.isInFavourites)
     .delete(authController.protect, FavouriteController.removeFromFavourite);
 
 module.exports = router;

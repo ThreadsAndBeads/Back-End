@@ -28,9 +28,11 @@ exports.deleteWorkshop = factory.deleteOne(
 
 exports.getWorkshopById = factory.getOne(Workshop, "Workshop not found");
 exports.saveSellerData = async (req, res, next) => {
-  const user = await User.findById(req.body.seller_id);
-  req.body.seller_name = user.name;
-  next();
+  try {
+    const user = await User.findById(req.body.seller_id);
+    req.body.seller_name = user.name;
+    next();
+  } catch (err) {}
 };
 exports.showAllWorkshops = async (req, res, next) => {
   try {

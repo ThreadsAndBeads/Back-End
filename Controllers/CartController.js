@@ -4,6 +4,7 @@ const Product = require("../Models/ProductModel");
 const User = require("../Models/UserModel");
 const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
+const fs = require("fs/promises");
 
 exports.AddToCart = async (req, res, next) => {
   try {
@@ -171,4 +172,26 @@ exports.updateCart = async (req, res, next) => {
   } catch (error) {
     return next(new AppError(error.message));
   }
+};
+
+exports.isValidCoupon = async (req, res, next) => {
+    try {
+        const sentCoupon = req.body.coupon;
+        const couponsJson = await fs.readFile("coupons.json");
+        const coupons = JSON.parse(couponsJson);
+        const coupon = coupons.find((c) => c.code == sentCoupon);
+
+        if (coupon) {
+            res.json({
+                valid: true,
+                discountPercentage: coupon.discount_percentage,
+            });
+        } else {
+            res.json({
+                valid: false,
+            });
+        }
+    } catch (error) {
+        return next(new AppError(error.message));
+    }
 };
