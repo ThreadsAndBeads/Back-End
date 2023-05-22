@@ -1,0 +1,4 @@
+[
+    { "id": 1, "code": "1345", "discount_percentage": 50 },
+    { "id": 2, "code": "6789", "discount_percentage": 10} 
+]

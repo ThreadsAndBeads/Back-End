@@ -13,9 +13,8 @@ const orderSchema = new mongoose.Schema({
   },
   products: [
     {
-      productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+      product: {
+        type: Object,
         required: true,
       },
       quantity: {
@@ -63,6 +62,14 @@ const orderSchema = new mongoose.Schema({
     type: String,
     enum: ["cash", "credit"],
     default: "cash",
+  },
+  discount: {
+    type: Number,
+    default: 0,
+  },
+  is_gift: {
+    type: Boolean,
+    default: false,
   },
 });
 

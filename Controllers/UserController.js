@@ -2,7 +2,7 @@
 const User = require("../Models/UserModel");
 const Order = require("../Models/OrderModel");
 const AppError = require("./../utils/appError");
-
+const Notification = require("../Models/NotificationModel");
 const factory = require("./handlerFactory");
 const multer = require("multer");
 const { storage } = require("../storage/storage");
@@ -35,7 +35,6 @@ exports.getUserById = async (req, res, next) => {
     return next(new AppError(err.message, 404));
   }
 };
-//get all sellers
 exports.getAllSellers = async (req, res, next) => {
   try {
     const sellers = await User.find({ type: "seller" });
@@ -128,4 +127,19 @@ exports.getSellerStatistics = async (req, res, next) => {
   } catch (error) {
     return next(new AppError(error.message));
   }
+};
+exports.getSellerNotifications = async (req, res) => {
+  const sellerId = req.params.id;
+  const user = await User.findById(sellerId);
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+  Notification.find({ sellerId })
+    .then((notifications) => {
+      res.status(200).json(notifications);
+    })
+    .catch((error) => {
+      console.error("Failed to retrieve notifications:", error);
+      res.sendStatus(500);
+    });
 };
