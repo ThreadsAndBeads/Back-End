@@ -10,12 +10,16 @@ router
     .delete(authController.protect, cartController.clearCart);
 
 router
-  .route("/count")
-  .get(authController.protect, cartController.getTotalProductsInCart);
+    .route("/count")
+    .get(authController.protect, cartController.getTotalProductsInCart);
 
 router
-  .route("/:id")
-  .delete(authController.protect, cartController.DeleteProduct)
-  .patch(authController.protect, cartController.updateCart);
+    .route("/coupon")
+    .post(authController.protect, cartController.isValidCoupon);
+
+router
+    .route("/:id")
+    .delete(authController.protect, cartController.DeleteProduct)
+    .patch(authController.protect, cartController.updateCart);
 
 module.exports = router;
