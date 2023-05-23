@@ -42,6 +42,34 @@ const sendVerificationEmail = async (name, email, userId) => {
   });
 };
 
+
+const sendWorkshopEmail = async (req, res, next) => { 
+  const { name, email } = req.body;
+  const emailContent = `
+    <p>Hi ${name},</p>
+    <p>Thank you for booking a workshop with Threads and Beads!</p>
+    <p>This email is to confirm your workshop reservation.</p>
+    <p>We look forward to seeing you at the workshop. Should you have any questions or need further assistance, please don't hesitate to contact us.</p>
+    <p>Best regards,</p>
+    <p>The Threads and Beads Team</p>
+  `;
+  let mailOptions = {
+    from: "Threads-and-Beads@gmail.com",
+    to: email,
+    subject: "Threads and Beads Workshops",
+    html: emailContent,
+  };
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+      res.status(500).json({ error: "Failed to send email" });
+    } else {
+      console.log("Email sent: " + info.response);
+      res.status(200).json({ message: "Email sent successfully" });
+    }
+  });
+}
 module.exports = {
   sendVerificationEmail,
+  sendWorkshopEmail,
 };

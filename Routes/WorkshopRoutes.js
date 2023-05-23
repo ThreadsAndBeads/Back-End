@@ -1,7 +1,7 @@
 const express = require("express");
 const authController = require("./../Controllers/AuthController");
 const workshopController = require("./../Controllers/WorkshopController");
-
+const EmailController = require("./../Controllers/EmailController");
 const router = express.Router();
 
 router
@@ -29,5 +29,6 @@ router
     authController.restrictTo("seller"),
     workshopController.updateWorkshop
   );
-
+router
+.post("/sendEmail", EmailController.sendWorkshopEmail)
 module.exports = router;
