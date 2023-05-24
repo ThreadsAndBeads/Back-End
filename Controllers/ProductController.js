@@ -11,6 +11,7 @@ const app = express();
 const APIFeatures = require("./../utils/apiFeatures");
 require("dotenv").config();
 const { storage } = require("../storage/storage");
+const { log } = require("console");
 const upload = multer({ storage });
 
 exports.resizeProductImages = async (req, res, next) => {
