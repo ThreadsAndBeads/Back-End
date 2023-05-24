@@ -13,10 +13,7 @@ const app = express();
 const passport = require("passport");
 const session = require("express-session");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-// app.use(cors());
 app.use(express.json());
-require("./utils/facebook");
-// app.use(cors({ origin: "*" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(

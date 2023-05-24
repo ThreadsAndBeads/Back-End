@@ -18,16 +18,8 @@ exports.makePayment = async (req, res) => {
           source: token,
           description: 'Payment description',
         });
-    
-        // Handle the successful payment
-        // You can perform additional actions here, such as updating your database
-    
-        // Send a response back to the client indicating the payment was successfuul
           
         res.status(200).json({ message: 'Payment successful' });
-      } catch (error) {
-        // Handle any errors that occur during the payment process
-        // You can customize the error message based on the specific error returned by Stripe
-        res.status(500).json({ error: 'Payment failed' });
+      } catch (error) {        res.status(500).json({ error: 'Payment failed' });
       }
     };

@@ -1,24 +1,3 @@
-// const socketIO = require("socket.io");
-
-// let socket = null;
-
-// function init(server) {
-//   socket = socketIO(server, {
-//     cors: {
-//       origin: "*",
-//       methods: ["GET", "POST"],
-//     },
-//   });
-
-//   socket.on("connection", (clientSocket) => {
-//     console.log("Socket: client connected");
-//   });
-// }
-
-// module.exports = {
-//   init,
-//   getSocket: () => socket,
-// };
 const { Server } = require("socket.io");
 
 let io = null;
