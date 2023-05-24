@@ -6,6 +6,7 @@ const app = require("./app");
 const DB_URL = process.env.DATABASE_URL;
 const DB = process.env.DATABASE;
 const socketModule = require("./socket");
+
 const server = http.createServer(app);
 socketModule.init(server);
 
@@ -17,7 +18,7 @@ mongoose
     console.log("DB connection successful");
   })
   .catch((err) => {
-    // console.error("Connection error:", err);
+    console.error("Connection error:", err);
   });
 
 server.listen(process.env.PORT, () => {
