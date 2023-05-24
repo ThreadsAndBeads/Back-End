@@ -1,4 +1,7 @@
 const express = require("express");
+const http = require("http");
+const cors = require("cors");
+const AppError = require("./utils/appError");
 const userRoutes = require("./Routes/UserRoutes");
 const productRoutes = require("./Routes/ProductRoutes");
 const cartRoutes = require("./Routes/CartRoutes");
@@ -7,36 +10,23 @@ const orderRoutes = require("./Routes/OrderRoutes");
 const favouriteRoutes = require("./Routes/FavouriteRoutes");
 const paymentRoutes = require("./Routes/PaymentRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
-const AppError = require("./utils/appError");
 const { storage } = require("./storage/storage");
 const multer = require("multer");
 const upload = multer({ storage });
+
 const app = express();
 const passport = require("passport");
-const dotenv = require("dotenv");
-const cors = require("cors");
+
 const session = require("express-session");
-dotenv.config({ path: "./config.env" });
-const http = require("http");
+
+
 const socketModule = require("./socket");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // app.use(cors());
 app.use(express.json());
 require("./utils/facebook");
-const mongoose = require("mongoose");
-const DB_URL = process.env.DATABASE_URL;
-const DB = process.env.DATABASE;
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-  })
-  .then(() => {
-    console.log("DB connection successful");
-  })
-  .catch((err) => {
-    // console.error("Connection error:", err);
-  });
+
 
 const server = http.createServer(app);
 
@@ -75,6 +65,5 @@ app.all("*", (req, res, next) => {
 });
 
 app.use(globalErrorHandler);
-server.listen(process.env.PORT, () => {
-  console.log("http://localhost:" + process.env.PORT);
-});
+
+module.exports = app;
