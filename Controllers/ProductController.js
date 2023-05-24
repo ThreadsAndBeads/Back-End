@@ -12,6 +12,7 @@ const Cart = require("../Models/CartModel");
 const APIFeatures = require("./../utils/apiFeatures");
 
 const { storage } = require("../storage/storage");
+const { log } = require("console");
 const upload = multer({ storage });
 
 exports.resizeProductImages = async (req, res, next) => {

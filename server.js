@@ -6,6 +6,7 @@ const app = require("./app");
 const DB_URL = process.env.DATABASE_URL;
 const DB = process.env.DATABASE;
 const socketModule = require("./socket");
+
 const server = http.createServer(app);
 socketModule.init(server);
 
