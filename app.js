@@ -1,5 +1,4 @@
 const express = require("express");
-const http = require("http");
 const cors = require("cors");
 const AppError = require("./utils/appError");
 const userRoutes = require("./Routes/UserRoutes");
@@ -16,11 +15,7 @@ const upload = multer({ storage });
 
 const app = express();
 const passport = require("passport");
-
 const session = require("express-session");
-
-
-const socketModule = require("./socket");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // app.use(cors());
@@ -28,10 +23,9 @@ app.use(express.json());
 require("./utils/facebook");
 
 
-const server = http.createServer(app);
 
 
-socketModule.init(server);
+// socketModule.init(server);
 app.use(cors({ origin: "*" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
