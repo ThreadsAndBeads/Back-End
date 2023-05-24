@@ -102,7 +102,6 @@ const groupProductsBySeller = (cart) => {
 const sendNotification = (sellerId) => {
   const socket = socketModule.getSocket();
   const room = `seller_${sellerId}`;
-  console.log(room);
   let sellerSocket;
   const sellerSockets = socket.sockets.adapter.rooms.get(room);
   if (sellerSockets && sellerSockets.size === 1) {
@@ -112,7 +111,6 @@ const sendNotification = (sellerId) => {
 
   if (sellerSocket) {
     sellerSocket.emit("notification", { data: "You Have A New Order" });
-    console.log("Notification sent to the seller.");
   } else {
     console.log("Seller socket not found in the room.");
   }
@@ -135,7 +133,7 @@ const getSellerById = async (sellerId) => {
   if (seller) {
     return {
       seller,
-      socketId: seller.socketId, // add the socketId property
+      socketId: seller.socketId,
     };
   }
   return null;
