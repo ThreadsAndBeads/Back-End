@@ -43,8 +43,6 @@ exports.getAllProducts = async (req, res, next) => {
 
     const totalRecords = await Product.countDocuments();
     const products = await features.query;
-    // socket.emit("notification", "notify"); // Updates Live Notification
-    // res.send(notify);
     res.status(201).json({
       status: "success",
       data: {

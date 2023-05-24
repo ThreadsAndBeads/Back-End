@@ -23,9 +23,7 @@ const session = require("express-session");
 const socketModule = require("./socket");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
-// app.use(cors());
 app.use(express.json());
-// require("./utils/facebook");
 
 
 const server = http.createServer(app);
@@ -45,14 +43,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
+
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);

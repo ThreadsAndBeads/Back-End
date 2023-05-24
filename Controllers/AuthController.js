@@ -1,16 +1,13 @@
 const User = require("../Models/UserModel");
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
-// const GoogleStrategy = require("passport-google-oauth2").Strategy;
 const { promisify } = require("util");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
-// const emailController = require("./EmailController");
 const sendEmail = require("./../utils/email");
 const sendVerificationEmail = require("../utils/verificationEmail");
 const AppError = require("./../utils/appError");
-// const FacebookStrategy = require("passport-facebook").Strategy;
 
 //Handling Error Messages
 const handleErrors = (err) => {
@@ -45,7 +42,6 @@ const createSendToken = (user, statusCode, res) => {
     httpOnly: true,
   };
   res.cookie("jwt", token, cookieOptions);
-  // Remove password from output
   user.password = undefined;
   res.status(statusCode).json({
     status: "success",
@@ -357,15 +353,6 @@ exports.googleLoginTest = async (req, res, next) => {
   try {
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
-      // user = new User({
-      //   email: req.body.email,
-      //   name: req.body.name,
-      //   type: "customer",
-      //   password: req.body.password,
-      //   isEmailVerified: true,
-      // });
-      // await user.save();
-      // createSendToken(user, 200, res);
 
       user = await User.create({
         email: req.body.email,

@@ -6,7 +6,6 @@ const workshopSchema = new mongoose.Schema({
   },
   seller_name: {
     type: String,
-    // required: [true, "Workshop must have a user name "],
   },
   title: {
     type: String,
