@@ -25,7 +25,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // app.use(cors());
 app.use(express.json());
-require("./utils/facebook");
+// require("./utils/facebook");
 
 
 const server = http.createServer(app);
