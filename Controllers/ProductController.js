@@ -5,11 +5,12 @@ const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const multer = require("multer");
 const sharp = require("sharp");
-const express = require("express");
+
 const fs = require("fs/promises");
-const app = express();
+
+const Cart = require("../Models/CartModel");
 const APIFeatures = require("./../utils/apiFeatures");
-require("dotenv").config();
+
 const { storage } = require("../storage/storage");
 const upload = multer({ storage });
 
@@ -32,8 +33,6 @@ exports.createProduct = factory.createOne(Product);
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-
-
     let filter = {};
     const features = new APIFeatures(Product.find(filter), req.query)
       .filter()
