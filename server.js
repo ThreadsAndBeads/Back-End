@@ -13,7 +13,7 @@ mongoose
     console.log("DB connection successful");
     })
     .catch((err) => {
-    // console.error("Connection error:", err);
+    console.error("Connection error:", err);
     });
 
 const server = app.listen(process.env.PORT, () => {
