@@ -146,7 +146,6 @@ exports.deleteProductImages = async (req, res, next) => {
                 const imageName = imageUrl[imageUrl.length - 1];
                 const name = imageName.split('.')[0];
                 deleteimage(name);
-                
             });
         }
         next();
