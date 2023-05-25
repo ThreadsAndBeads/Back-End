@@ -98,7 +98,16 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
 exports.getAllCategories = async (req, res, next) => {
   try {
     const categoriesJson = await fs.readFile("categories.json");
-    const categories = JSON.parse(categoriesJson);
+    const categoriesParse = JSON.parse(categoriesJson);
+    const products = await Product.find();
+
+    const categories = categoriesParse.map((category) => {
+        const productNum = products.filter(
+            (product) => product.category === category.name
+        ).length;
+        return { id: category.id, name: category.name, productNum };
+    });
+
     res.json(categories);
   } catch (error) {
     return next(new AppError(error.message));

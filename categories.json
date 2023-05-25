@@ -1,7 +1,7 @@
 [
-    { "id": 1,"name": "Clay", "productNum": 3 },
-    { "id": 2,"name": "Accessories", "productNum": 2 },
-    { "id": 3,"name": "Canva", "productNum": 0 },
-    { "id": 4,"name": "Pottery", "productNum": 0 },
-    { "id": 5, "name": "Crochet", "productNum": 0 }
+    { "id": 1,"name": "Clay" },
+    { "id": 2,"name": "Accessories" },
+    { "id": 3,"name": "Canva" },
+    { "id": 4,"name": "Pottery" },
+    { "id": 5, "name": "Crochet" }
 ]
