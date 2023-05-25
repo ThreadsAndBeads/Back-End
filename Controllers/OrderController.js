@@ -67,7 +67,7 @@ exports.CreateOrder = async (req, res, next) => {
         discount,
         is_gift
       );
-      sendNotification(sellerId);
+      sendNotification(sellerId, "Add");
       orders.push({
         seller,
         order: savedOrder,
@@ -99,7 +99,7 @@ const groupProductsBySeller = (cart) => {
   return productsBySeller;
 };
 
-const sendNotification = (sellerId) => {
+const sendNotification = (sellerId, message) => {
   const socket = socketModule.getSocket();
   const room = `seller_${sellerId}`;
   let sellerSocket;
@@ -110,13 +110,13 @@ const sendNotification = (sellerId) => {
   }
 
   if (sellerSocket) {
-    sellerSocket.emit("notification", { data: "You Have A New Order" });
+    sellerSocket.emit("notification", { data: message });
   } else {
     console.log("Seller socket not found in the room.");
   }
   const newNotification = new Notification({
     sellerId: sellerId,
-    notificationDetails: "You Have A New Order",
+    notificationDetails: message,
   });
   newNotification
     .save()
@@ -232,7 +232,6 @@ exports.GetCustomerOrder = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const orders = await Order.find({ userId: userId });
-    console.log("orders:", orders);
     res.status(200).json({
       status: "success",
       data: {
@@ -245,10 +244,11 @@ exports.GetCustomerOrder = async (req, res, next) => {
 };
 
 exports.cancelOrder = async function (req, res, next) {
+  console.log("here");
   try {
     const orderId = req.params.id;
     let order = await Order.findById(orderId);
-
+    let sellerId = order.sellerId;
     if (!order) {
       res.status(404).json({
         status: "fail",
@@ -265,7 +265,7 @@ exports.cancelOrder = async function (req, res, next) {
       });
     } else {
       await Order.findByIdAndDelete(orderId);
-
+      sendNotification(sellerId, "cancel");
       res.status(200).json({
         status: "success",
         message: "Order has been cancelled and deleted.",
