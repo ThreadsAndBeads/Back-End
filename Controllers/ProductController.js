@@ -29,8 +29,16 @@ exports.resizeProductImages = async (req, res, next) => {
 };
 
 exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
-
-exports.createProduct = factory.createOne(Product);
+exports.createProduct = (req, res, next) => {
+  const { price, priceDiscount } = req.body;
+  let actualPrice = price; 
+  if (priceDiscount > 0) {
+    actualPrice = price - priceDiscount; 
+  }
+  req.body.actualPrice = actualPrice; 
+  factory.createOne(Product)(req, res, next); 
+};
+// exports.createProduct = factory.createOne(Product);
 
 exports.getAllProducts = async (req, res, next) => {
   try {
