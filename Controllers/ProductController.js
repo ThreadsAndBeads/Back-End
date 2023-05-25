@@ -41,9 +41,8 @@ exports.getAllProducts = async (req, res, next) => {
       .limitFields()
       .paginate();
 
-    // const totalRecords = await Product.countDocuments();
+    const totalRecords = await Product.countDocuments();
     const products = await features.query;
-    const totalRecords = products.length;
     res.status(201).json({
       status: "success",
       data: {
