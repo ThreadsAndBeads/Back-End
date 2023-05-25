@@ -67,7 +67,7 @@ exports.CreateOrder = async (req, res, next) => {
         discount,
         is_gift
       );
-      sendNotification(sellerId, "You Have A New Order");
+      sendNotification(sellerId, "Add");
       orders.push({
         seller,
         order: savedOrder,
@@ -232,7 +232,6 @@ exports.GetCustomerOrder = async (req, res, next) => {
   try {
     const userId = req.params.userId;
     const orders = await Order.find({ userId: userId });
-    // console.log("orders:", orders);
     res.status(200).json({
       status: "success",
       data: {
@@ -266,7 +265,7 @@ exports.cancelOrder = async function (req, res, next) {
       });
     } else {
       await Order.findByIdAndDelete(orderId);
-      sendNotification(sellerId, "customer canceled his order");
+      sendNotification(sellerId, "cancel");
       res.status(200).json({
         status: "success",
         message: "Order has been cancelled and deleted.",
