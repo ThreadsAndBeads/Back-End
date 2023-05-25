@@ -38,6 +38,4 @@ router
     productController.updateProduct
   );
 
-// router.get("/categories", productController.getAllCategories);
-
 module.exports = router;
