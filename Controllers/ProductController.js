@@ -41,8 +41,9 @@ exports.getAllProducts = async (req, res, next) => {
       .limitFields()
       .paginate();
 
-    const totalRecords = await Product.countDocuments();
+    // const totalRecords = await Product.countDocuments();
     const products = await features.query;
+    const totalRecords = products.length;
     res.status(201).json({
       status: "success",
       data: {
@@ -102,10 +103,10 @@ exports.getAllCategories = async (req, res, next) => {
     const products = await Product.find();
 
     const categories = categoriesParse.map((category) => {
-        const productNum = products.filter(
-            (product) => product.category === category.name
-        ).length;
-        return { id: category.id, name: category.name, productNum };
+      const productNum = products.filter(
+        (product) => product.category === category.name
+      ).length;
+      return { id: category.id, name: category.name, productNum };
     });
 
     res.json(categories);

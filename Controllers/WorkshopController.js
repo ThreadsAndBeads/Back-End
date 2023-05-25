@@ -41,9 +41,9 @@ exports.showAllWorkshops = async (req, res, next) => {
       .limitFields()
       .paginate();
 
-    const totalRecords = await Workshop.countDocuments();
     const workshops = await features.query;
-
+    // const totalRecords = await Workshop.countDocuments();
+    const totalRecords = workshops.length;
     res.status(201).json({
       status: "success",
       data: {
@@ -55,4 +55,3 @@ exports.showAllWorkshops = async (req, res, next) => {
     return next(new AppError(error.message));
   }
 };
-
