@@ -30,7 +30,7 @@ const productSchema = new mongoose.Schema({
       message: "discount price should be below regular price",
     },
   },
-  actualPrice:{
+  actualPrice: {
     type: Number,
   },
   description: {
@@ -50,6 +50,21 @@ const productSchema = new mongoose.Schema({
 productSchema.virtual("discountPercentage").get(function () {
   return (this.priceDiscount / this.price) * 100;
 });
+productSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+  const filter = this.getFilter();
 
+  if (update.price || update.priceDiscount) {
+    const product = await this.model.findOne(filter);
+
+    if (update.priceDiscount > 0) {
+      update.actualPrice = update.price - update.priceDiscount; // calculate the actual price
+    } else {
+      update.actualPrice = update.price; // set the actual price to the regular price
+    }
+  }
+
+  next();
+});
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;
