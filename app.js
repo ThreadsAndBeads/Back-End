@@ -9,22 +9,11 @@ const orderRoutes = require("./Routes/OrderRoutes");
 const favouriteRoutes = require("./Routes/FavouriteRoutes");
 const paymentRoutes = require("./Routes/PaymentRoutes");
 const globalErrorHandler = require("./Controllers/ErrorController");
-const { storage } = require("./storage/storage");
-const multer = require("multer");
-const upload = multer({ storage });
-
 const app = express();
 const passport = require("passport");
 const session = require("express-session");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-
 app.use(express.json());
-
-
-
-
-// socketModule.init(server);
-app.use(cors({ origin: "*" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
@@ -37,7 +26,15 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use("*", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,PUT,PATCH,DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+});
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/products", productRoutes);
 app.use("/api/v1/cart", cartRoutes);

@@ -25,7 +25,6 @@ router
 router
   .route("/:id")
   .get(authController.protect, productController.getProduct)
-
   .delete(
     authController.protect,
     authController.restrictTo("seller"),

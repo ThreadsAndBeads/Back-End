@@ -5,12 +5,14 @@ const AppError = require("./../utils/appError");
 const factory = require("./handlerFactory");
 const multer = require("multer");
 const sharp = require("sharp");
-const express = require("express");
+
 const fs = require("fs/promises");
-const app = express();
+
+const Cart = require("../Models/CartModel");
 const APIFeatures = require("./../utils/apiFeatures");
-require("dotenv").config();
+
 const { storage } = require("../storage/storage");
+const { log } = require("console");
 const upload = multer({ storage });
 
 exports.resizeProductImages = async (req, res, next) => {
@@ -27,13 +29,19 @@ exports.resizeProductImages = async (req, res, next) => {
 };
 
 exports.uploadProductImages = upload.fields([{ name: "images", maxCount: 3 }]);
-
-exports.createProduct = factory.createOne(Product);
+exports.createProduct = (req, res, next) => {
+  const { price, priceDiscount } = req.body;
+  let actualPrice = price; 
+  if (priceDiscount > 0) {
+    actualPrice = price - priceDiscount; 
+  }
+  req.body.actualPrice = actualPrice; 
+  factory.createOne(Product)(req, res, next); 
+};
+// exports.createProduct = factory.createOne(Product);
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-
-
     let filter = {};
     const features = new APIFeatures(Product.find(filter), req.query)
       .filter()
