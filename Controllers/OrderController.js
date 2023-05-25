@@ -264,7 +264,10 @@ exports.cancelOrder = async function (req, res, next) {
           "Order has already been shipped/delivered and cannot be cancelled.",
       });
     } else {
-      await Order.findByIdAndDelete(orderId);
+      let order = await Order.findById(orderId);
+      order.orderStatus = "cancelled";
+      order.markModified("orderStatus");
+      order.save({ validateBeforeSave: false });
       sendNotification(sellerId, "cancel");
       res.status(200).json({
         status: "success",
