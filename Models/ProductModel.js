@@ -30,7 +30,9 @@ const productSchema = new mongoose.Schema({
       message: "discount price should be below regular price",
     },
   },
-
+  actualPrice:{
+    type: Number,
+  },
   description: {
     type: String,
     trim: true,

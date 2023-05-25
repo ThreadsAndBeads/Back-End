@@ -152,7 +152,7 @@ const calculateTotalPrice = (sellerProducts, products) => {
     const productData = products.find((p) =>
       p._id.equals(product.productId._id)
     );
-    return total + product.quantity * productData.price;
+    return total + product.quantity * productData.actualPrice;
   }, 0);
 };
 
