@@ -21,7 +21,6 @@ exports.updateOne = (Model, errorMsg) => async (req, res, next) => {
       new: true,
       runValidators: true,
     });
-    console.log(doc);
     if (doc) {
       res.status(200).json({
         status: "success",

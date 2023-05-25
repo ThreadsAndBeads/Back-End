@@ -11,7 +11,6 @@ const upload = multer({ storage });
 
 exports.resizeWorkshopImage = async (req, res, next) => {
   if (!req.file) return next();
-  console.log(req.file.path);
   req.body.image = req.file.path;
   next();
 };

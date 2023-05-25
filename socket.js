@@ -6,7 +6,7 @@ function init(server) {
   io = new Server(server, {
     cors: {
       origin: "*",
-      methods: ["GET", "POST"],
+      methods: ["GET", "POST", "PATCH", "DELETE", "PUT", "OPTIONS"],
     },
   });
 
