@@ -23,19 +23,21 @@ router
   .get(productController.getHighestDiscountedProducts);
 
 router
-  .route("/:id")
-  .get(authController.protect, productController.getProduct)
-  .delete(
-    authController.protect,
-    authController.restrictTo("seller"),
-    productController.deleteProduct
-  )
-  .patch(
-    authController.protect,
-    authController.restrictTo("seller"),
-    productController.uploadProductImages,
-    productController.resizeProductImages,
-    productController.updateProduct
-  );
+    .route("/:id")
+    .get(authController.protect, productController.getProduct)
+    .delete(
+        authController.protect,
+        authController.restrictTo("seller"),
+        // productController.checkIfProductInCart,
+        productController.deleteProductImages,
+        productController.deleteProduct
+    )
+    .patch(
+        authController.protect,
+        authController.restrictTo("seller"),
+        productController.uploadProductImages,
+        productController.resizeProductImages,
+        productController.updateProduct
+    );
 
 module.exports = router;
