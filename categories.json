@@ -3,5 +3,8 @@
     { "id": 2,"name": "Accessories" },
     { "id": 3,"name": "Canva" },
     { "id": 4,"name": "Pottery" },
-    { "id": 5, "name": "Crochet" }
+    { "id": 5, "name": "Crochet" },
+    { "id": 6,"name": "Candles"},
+    { "id": 6,"name": "Resin"},
+    { "id": 6,"name": "Leather"}
 ]

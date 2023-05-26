@@ -18,6 +18,7 @@ router
   );
 router.get("/search", productController.search);
 router.get("/categories", productController.getAllCategories);
+router.get("/priceRange", productController.priceRange);
 router
   .route("/discountedproducts")
   .get(productController.getHighestDiscountedProducts);
