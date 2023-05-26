@@ -78,14 +78,12 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
             priceDiscount: { $gt: 0 },
         });
 
-        // Sort the products by descending order of discount percentage
         const sortedDiscountedProducts = discountedProducts.sort((a, b) => {
             const discountA = a.discountPercentage;
             const discountB = b.discountPercentage;
             return discountB - discountA;
         });
 
-        // Return the top 10 products with the highest discount
         const topDiscountedProducts = sortedDiscountedProducts.slice(0, 10);
 
         res.status(200).json({
@@ -212,7 +210,6 @@ const deleteimage = async (image) => {
                     errors: err,
                 });
             }
-            console.log(res);
         }
     );
 };
