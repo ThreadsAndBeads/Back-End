@@ -44,6 +44,8 @@ Here are some additional details about the Threads & Beads backend repository:
 - Error Handling: Robust error handling is implemented in the backend to provide informative and user-friendly error messages, enhancing the overall user experience.
 - Cloudinary Integration: Threads & Beads utilizes Cloudinary for efficient image storage, ensuring high-quality visuals and seamless integration of product images.
 - Google Sign Up Integration: The platform incorporates Google Sign Up functionality, allowing users to easily create an account using their Google credentials for a streamlined registration process.
+- Deployment on Render: The backend of Threads & Beads is deployed on Render, offering easy setup, automatic scaling, SSL certificates, custom domains, simple configuration, and monitoring.
+
 
 # Contributors
 
