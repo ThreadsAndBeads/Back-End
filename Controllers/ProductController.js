@@ -136,6 +136,31 @@ exports.search = async (req, res, next) => {
     }
 };
 
+exports.priceRange = async (req, res, next) => {
+    try {
+        const prices = await Product.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    minPrice: { $min: "$price" },
+                    maxPrice: { $max: "$price" }
+                }
+            }
+        ]);
+
+        const minPrice = prices[0].minPrice;
+        const maxPrice = prices[0].maxPrice;
+
+        return res.json({
+            minPrice: minPrice,
+            maxPrice: maxPrice
+        });
+
+    } catch (error) {
+        return next(new AppError(error.message));
+    } 
+}
+
 exports.deleteProductImages = async (req, res, next) => {
     try {
         const productId = req.params.id;
