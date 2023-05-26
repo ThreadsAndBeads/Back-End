@@ -11,7 +11,6 @@ exports.makePayment = async (req, res) => {
     console.log(req);
       try {
         const { token, amount } = req.body;
-        // Create a charge using the Stripe API
         const charge = await stripe.charges.create({
           amount: amount,
           currency: 'USD',

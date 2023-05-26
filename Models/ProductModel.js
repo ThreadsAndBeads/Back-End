@@ -58,9 +58,9 @@ productSchema.pre("findOneAndUpdate", async function (next) {
     const product = await this.model.findOne(filter);
 
     if (update.priceDiscount > 0) {
-      update.actualPrice = update.price - update.priceDiscount; // calculate the actual price
+      update.actualPrice = update.price - update.priceDiscount; 
     } else {
-      update.actualPrice = update.price; // set the actual price to the regular price
+      update.actualPrice = update.price; 
     }
   }
 
