@@ -143,9 +143,9 @@ exports.priceRange = async (req, res, next) => {
                 $group: {
                     _id: null,
                     minPrice: { $min: "$price" },
-                    maxPrice: { $max: "$price" }
-                }
-            }
+                    maxPrice: { $max: "$price" },
+                },
+            },
         ]);
 
         const minPrice = prices[0].minPrice;
@@ -153,13 +153,12 @@ exports.priceRange = async (req, res, next) => {
 
         return res.json({
             minPrice: minPrice,
-            maxPrice: maxPrice
+            maxPrice: maxPrice,
         });
-
     } catch (error) {
         return next(new AppError(error.message));
-    } 
-}
+    }
+};
 
 exports.deleteProductImages = async (req, res, next) => {
     try {
@@ -167,9 +166,9 @@ exports.deleteProductImages = async (req, res, next) => {
         const product = await Product.findById(productId);
         if (product.images.length > 0) {
             product.images.forEach(async (image) => {
-                const imageUrl = image.split('/');
+                const imageUrl = image.split("/");
                 const imageName = imageUrl[imageUrl.length - 1];
-                const name = imageName.split('.')[0];
+                const name = imageName.split(".")[0];
                 deleteimage(name);
             });
         }

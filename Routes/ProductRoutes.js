@@ -29,7 +29,7 @@ router
     .delete(
         authController.protect,
         authController.restrictTo("seller"),
-        // productController.checkIfProductInCart,
+        productController.checkIfProductInCart,
         productController.deleteProductImages,
         productController.deleteProduct
     )
