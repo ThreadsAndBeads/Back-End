@@ -27,8 +27,9 @@ router
   .patch(
     authController.protect,
     authController.restrictTo("seller"),
+    workshopController.uploadWorkshopImage,
+    workshopController.resizeWorkshopImage,
     workshopController.updateWorkshop
   );
-router
-.post("/sendEmail", EmailController.sendWorkshopEmail)
+router.post("/sendEmail", EmailController.sendWorkshopEmail);
 module.exports = router;
