@@ -78,14 +78,12 @@ exports.getHighestDiscountedProducts = async (req, res, next) => {
             priceDiscount: { $gt: 0 },
         });
 
-        // Sort the products by descending order of discount percentage
         const sortedDiscountedProducts = discountedProducts.sort((a, b) => {
             const discountA = a.discountPercentage;
             const discountB = b.discountPercentage;
             return discountB - discountA;
         });
 
-        // Return the top 10 products with the highest discount
         const topDiscountedProducts = sortedDiscountedProducts.slice(0, 10);
 
         res.status(200).json({
@@ -136,15 +134,39 @@ exports.search = async (req, res, next) => {
     }
 };
 
+exports.priceRange = async (req, res, next) => {
+    try {
+        const prices = await Product.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    minPrice: { $min: "$price" },
+                    maxPrice: { $max: "$price" },
+                },
+            },
+        ]);
+
+        const minPrice = prices[0].minPrice;
+        const maxPrice = prices[0].maxPrice;
+
+        return res.json({
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+        });
+    } catch (error) {
+        return next(new AppError(error.message));
+    }
+};
+
 exports.deleteProductImages = async (req, res, next) => {
     try {
         const productId = req.params.id;
         const product = await Product.findById(productId);
         if (product.images.length > 0) {
             product.images.forEach(async (image) => {
-                const imageUrl = image.split('/');
+                const imageUrl = image.split("/");
                 const imageName = imageUrl[imageUrl.length - 1];
-                const name = imageName.split('.')[0];
+                const name = imageName.split(".")[0];
                 deleteimage(name);
             });
         }
@@ -188,7 +210,6 @@ const deleteimage = async (image) => {
                     errors: err,
                 });
             }
-            console.log(res);
         }
     );
 };

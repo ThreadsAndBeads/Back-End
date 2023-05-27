@@ -36,6 +36,16 @@ The backend of Threads & Beads is built using the following technologies:
 
 For detailed information on the APIs provided by Threads & Beads, please refer to the [API Documentation](https://documenter.getpostman.com/view/27201941/2s93m611uS).
 
+## Additional Information
+Here are some additional details about the Threads & Beads backend repository:
+
+- Scalability: The backend is designed to be scalable, allowing for seamless handling of increased traffic and data volume as the platform grows.
+- Authentication and Authorization: The backend implements secure user authentication and authorization mechanisms to ensure data privacy and protect user accounts.
+- Error Handling: Robust error handling is implemented in the backend to provide informative and user-friendly error messages, enhancing the overall user experience.
+- Cloudinary Integration: Threads & Beads utilizes Cloudinary for efficient image storage, ensuring high-quality visuals and seamless integration of product images.
+- Google Sign Up Integration: The platform incorporates Google Sign Up functionality, allowing users to easily create an account using their Google credentials for a streamlined registration process.
+- Deployment on Render: The backend of Threads & Beads is deployed on Render, offering easy setup, automatic scaling, SSL certificates, custom domains, simple configuration, and monitoring.
+
 
 # Contributors
 
