@@ -22,7 +22,7 @@ const sendVerificationEmail = async (name, email, userId) => {
     from: "Threads-and-Beads@gmail.com",
     to: email,
     subject: "Threads and Beads Email Verification",
-    html: `<p>Hi ${name},</p><p>Please click the following link to verify your email:</p><a href="http://localhost:7000/api/v1/users/verify?token=${verificationToken}">http://localhost:7000/api/v1/users/verify?token=${verificationToken}</a>`,
+    html: `<p>Hi ${name},</p><p>Please click the following link to verify your email:</p><a href="https://threadsandbeads-4863e.web.app/api/v1/users/verify?token=${verificationToken}">https://threadsandbeads-4863e.web.app/api/v1/users/verify?token=${verificationToken}</a>`,
   };
   const user = await User.findOneAndUpdate(
     { email: email },

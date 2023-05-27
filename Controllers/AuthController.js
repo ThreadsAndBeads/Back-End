@@ -98,7 +98,7 @@ module.exports.verify_get = async (req, res, next) => {
     user.isEmailVerified = true;
     user.verificationToken = undefined;
     await user.save();
-    const redirectUrl = "http://localhost:4200/welcome"; // Replace with the URL of your front-end page
+    const redirectUrl = "https://threadsandbeads-4863e.web.app/welcome"; // Replace with the URL of your front-end page
     res.redirect(redirectUrl);
   } catch (err) {
     // Handle any errors that occur during email verification
@@ -271,7 +271,7 @@ exports.forgotPassword = async (req, res, next) => {
       "host"
     )}/api/v1/users/resetPassword/${resetToken}`;
 
-    const reset = `http://localhost:4200/response-reset-password/${resetToken}`;
+    const reset = `https://threadsandbeads-4863e.web.app/response-reset-password/${resetToken}`;
     const html = `<div style="max-width: 600px; margin: 0 auto; padding: 20px; box-sizing: border-box; background-color: #fff; border-radius: 5px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
     <h1 style="font-size: 32px; font-weight: bold; margin-bottom: 20px;">Reset Your Password</h1>
     <p style="margin-bottom: 16px;">Hi ${user.email},</p>
