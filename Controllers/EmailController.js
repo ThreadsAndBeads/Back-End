@@ -4,12 +4,10 @@ const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 
 let transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: process.env.EMAIL_PORT,
-  secureConnection: false,
+  service: "gmail",
   auth: {
-    user: process.env.EMAIL_USERNAME,
-    pass: process.env.EMAIL_PASSWORD,
+    user: process.env.GMAIL,
+    pass: process.env.APP_PASSWORD,
   },
   tls: {
     ciphers: "SSLv3",
@@ -42,8 +40,7 @@ const sendVerificationEmail = async (name, email, userId) => {
   });
 };
 
-
-const sendWorkshopEmail = async (req, res, next) => { 
+const sendWorkshopEmail = async (req, res, next) => {
   const { name, email } = req.body;
   const emailContent = `
     <p>Hi ${name},</p>
@@ -68,7 +65,7 @@ const sendWorkshopEmail = async (req, res, next) => {
       res.status(200).json({ message: "Email sent successfully" });
     }
   });
-}
+};
 module.exports = {
   sendVerificationEmail,
   sendWorkshopEmail,
