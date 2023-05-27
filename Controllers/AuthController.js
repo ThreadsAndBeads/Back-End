@@ -268,7 +268,7 @@ exports.forgotPassword = async (req, res, next) => {
 
     // 3) Send it to user's email
     const resetURL = `${req.protocol}://${req.get(
-      "host"
+      "https://threadsbeads.onrender.com"
     )}/api/v1/users/resetPassword/${resetToken}`;
 
     const reset = `https://threadsandbeads-4863e.web.app/response-reset-password/${resetToken}`;
@@ -353,7 +353,6 @@ exports.googleLoginTest = async (req, res, next) => {
   try {
     let user = await User.findOne({ email: req.body.email });
     if (!user) {
-
       user = await User.create({
         email: req.body.email,
         password: req.body.password,
