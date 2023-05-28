@@ -2,7 +2,8 @@
 <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Delicious+Handrawn'&size=41&pause=1000&color=A20A0A&vCenter=true&width=240&lines=Threads+%26+Beads." alt="Typing SVG" /></a>
 </div>
 
-  Welcome to Threads & Beads, an ecommerce website dedicated to handmade crafts and jewelry. This repository contains the backend code for the Threads & Beads project, powered by Node.js.
+  Welcome to Threads & Beads, an ecommerce website dedicated to handmade crafts and jewelry. This repository contains the backend code for the Threads & Beads project, powered by Node.js. <br> <br>
+Join us at Threads & Beads and immerse yourself in a world of creativity, Visit our [website](https://threadsandbeads-4863e.web.app/) and start exploring today
 
 # Introduction
 
